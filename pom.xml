@@ -574,15 +574,12 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
-<<<<<<< Updated upstream
             <scope>test</scope>
         </dependency>
             <!-- For JUnit Jupiter -->
             <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-=======
->>>>>>> Stashed changes
             <scope>test</scope>
         </dependency>
     </dependencies>
