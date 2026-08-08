@@ -25,7 +25,7 @@ import java.util.function.Function;
 
 /**
  *
- * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
+ * @author [@Loong Wan](https://github.com/loong10k)
  */
 @ConfigurationProperties(CanalThreadPoolProperties.PREFIX)
 @Data
