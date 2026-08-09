@@ -24,8 +24,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 
 /**
+ * Configuration properties for the Canal thread pool, bound to the {@code canal.thread-pool} prefix.
  *
  * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 @ConfigurationProperties(CanalThreadPoolProperties.PREFIX)
 @Data
@@ -93,11 +95,11 @@ public class CanalThreadPoolProperties {
 
 
 	/**
-	 * 拒绝处理策略
-	 * CallerRunsPolicy()：交由调用方线程运行，比如 main 线程。
-	 * AbortPolicy()：直接抛出异常。
-	 * DiscardPolicy()：直接丢弃。
-	 * DiscardOldestPolicy()：丢弃队列中最老的任务。
+	 * Rejected-execution policies.
+	 * CallerRunsPolicy()  - run the task on the caller thread (e.g. main thread)
+	 * AbortPolicy()        - throw a RejectedExecutionException
+	 * DiscardPolicy()      - silently discard the task
+	 * DiscardOldestPolicy()- discard the oldest queued task
 	 */
 	public enum RejectedPolicy {
 

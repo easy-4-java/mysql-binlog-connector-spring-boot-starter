@@ -10,10 +10,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * {@link RowDataHandler} implementation that processes row data represented as a list of
+ * column-name-to-value maps, dispatching INSERT, UPDATE and DELETE events to the entry handler.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 public class MapRowDataHandlerImpl implements RowDataHandler<List<Map<String, String>>> {
 
     private IModelFactory<Map<String,String>> modelFactory;
 
+    /**
+     * Constructs a new handler backed by the given model factory.
+     *
+     * @param modelFactory the factory used to build model instances from row data maps
+     */
     public MapRowDataHandlerImpl(IModelFactory<Map<String, String>> modelFactory) {
         this.modelFactory = modelFactory;
     }

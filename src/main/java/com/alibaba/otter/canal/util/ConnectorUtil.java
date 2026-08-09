@@ -15,12 +15,20 @@ import org.springframework.util.StringUtils;
 
 import java.net.InetSocketAddress;
 
+/**
+ * Factory methods for creating Canal connectors (simple, cluster, Kafka, PulsarMQ, RabbitMQ
+ * and RocketMQ) from the corresponding starter properties.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 public class ConnectorUtil {
 
     /**
-     * 创建集群模式的 Canal 连接器
-     * @param instance 实例配置
-     * @return Canal 连接器
+     * Creates a cluster-mode Canal connector from the given instance configuration.
+     *
+     * @param instance the cluster instance configuration
+     * @return a cluster-mode Canal connector
      */
     public static ClusterCanalConnector createClusterCanalConnector(CanalClusterProperties.Instance instance) {
         if (StringUtils.hasText(instance.getZkServers())) {
@@ -47,9 +55,10 @@ public class ConnectorUtil {
     }
 
     /**
-     * 创建 Kafka 连接器
-     * @param instance 实例配置
-     * @return Canal 连接器
+     * Creates a Kafka Canal connector from the given instance configuration.
+     *
+     * @param instance the Kafka instance configuration
+     * @return a Kafka Canal connector
      */
     public static KafkaCanalConnector createKafkaCanalConnector(CanalKafkaClientProperties.Instance instance) {
         KafkaCanalConnector connector = instance.isEarliest() ? new KafkaOffsetCanalConnector(instance.getServers(),
@@ -61,9 +70,10 @@ public class ConnectorUtil {
     }
 
     /**
-     * 创建 PulsarMQ 连接器
-     * @param instance 实例配置
-     * @return Canal 连接器
+     * Creates a PulsarMQ Canal connector from the given instance configuration.
+     *
+     * @param instance the PulsarMQ instance configuration
+     * @return a PulsarMQ Canal connector
      */
     public static PulsarMQCanalConnector createPulsarMQCanalConnector(CanalPulsarClientProperties.Instance instance) {
         PulsarMQCanalConnector connector = new PulsarMQCanalConnector(Boolean.TRUE,
@@ -76,9 +86,10 @@ public class ConnectorUtil {
     }
 
     /**
-     * 创建 RabbitMQ 连接器
-     * @param instance 实例配置
-     * @return Canal 连接器
+     * Creates a RabbitMQ Canal connector from the given instance configuration.
+     *
+     * @param instance the RabbitMQ instance configuration
+     * @return a RabbitMQ Canal connector
      */
     public static RabbitMQCanalConnector createRabbitMQCanalConnector(CanalRabbitmqClientProperties.Instance instance) {
         RabbitMQCanalConnector connector = new RabbitMQCanalConnector(instance.getAddresses(), instance.getVhost(),
@@ -89,12 +100,13 @@ public class ConnectorUtil {
     }
 
     /**
-     * 创建 RocketMQ 连接器
-     * @param instance 实例配置
-     * @return Canal 连接器
+     * Creates a RocketMQ Canal connector from the given instance configuration.
+     *
+     * @param instance the RocketMQ instance configuration
+     * @return a RocketMQ Canal connector
      */
     public static RocketMQCanalConnector createRocketMQCanalConnector(CanalRocketmqClientProperties.Instance instance) {
-        // 1、创建连接实例
+        // 1. Create the connector instance
         RocketMQCanalConnector connector;
         if (StringUtils.hasText(instance.getAccessKey()) && StringUtils.hasText(instance.getSecretKey())) {
             if (StringUtils.hasText(instance.getNamespace())) {
@@ -120,9 +132,10 @@ public class ConnectorUtil {
     }
 
     /**
-     * 创建单机模式的 Canal 连接器
-     * @param instance 实例配置
-     * @return Canal 连接器
+     * Creates a simple-mode Canal connector from the given instance configuration.
+     *
+     * @param instance the simple instance configuration
+     * @return a simple-mode Canal connector
      */
     public static SimpleCanalConnector createSimpleCanalConnector(CanalSimpleProperties.Instance instance) {
         InetSocketAddress address = new InetSocketAddress(instance.getHost(), instance.getPort());

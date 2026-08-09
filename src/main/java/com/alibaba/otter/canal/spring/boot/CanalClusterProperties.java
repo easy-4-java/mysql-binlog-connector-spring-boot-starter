@@ -9,6 +9,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Configuration properties for the Canal cluster-mode client, bound to the {@code canal.cluster} prefix.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 @ConfigurationProperties(CanalClusterProperties.PREFIX)
 @Getter
 @Setter
@@ -21,47 +27,50 @@ public class CanalClusterProperties {
     public static final String PREFIX = "canal.cluster";
 
     /**
-     * 配置信息
+     * The cluster connector instances to create.
      */
     private List<CanalClusterProperties.Instance> instances = new ArrayList<>();
 
+    /**
+     * Configuration for a single Canal cluster connector instance.
+     */
     @Data
     public static class Instance {
 
         /**
-         * Canal Server 地址
+         * Comma-separated Canal Server addresses, used when {@code zkServers} is not set.
          */
         private String addresses;
         /**
-         * Canal Zookeeper 地址。如果设置了该属性，则忽略addresses属性。
+         * Canal ZooKeeper address. When set, the {@code addresses} property is ignored.
          */
         private String zkServers;
         /**
-         * Canal Destination 地址
+         * The Canal destination (canal instance name).
          */
         private String destination;
         /**
-         * Canal Server 账号
+         * The Canal Server account username.
          */
         private String username;
         /**
-         * Canal Server 密码
+         * The Canal Server account password.
          */
         private String password;
         /**
-         * Socket 连接超时时间，单位：毫秒。默认为 60000
+         * Socket connect timeout in milliseconds. Defaults to {@code 60000}.
          */
         private int soTimeout     = 60000;
         /**
-         * Socket 空闲超时时间，单位：毫秒。默认为 3600000
+         * Socket idle timeout in milliseconds. Defaults to {@code 3600000} (one hour).
          */
         private int idleTimeout   = 60 * 60 * 1000;
         /**
-         * 重试次数;设置-1时可以subscribe阻塞等待时优雅停机
+         * Number of retry attempts. Set to {@code -1} to block on subscribe for a graceful shutdown.
          */
         private int retryTimes    = 3;
         /**
-         * 重试的时间间隔，默认5秒
+         * Retry interval in milliseconds. Defaults to {@code 5000} (5 seconds).
          */
         private int retryInterval = 5000;
 

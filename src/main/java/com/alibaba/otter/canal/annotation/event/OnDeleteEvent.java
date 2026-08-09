@@ -7,9 +7,12 @@ import org.springframework.core.annotation.AliasFor;
 import java.lang.annotation.*;
 
 /**
- * 删除操作监听器 当删除数据库的记录时 添加该注解的方法会被调用
+ * Listener annotation for a {@code DELETE} event; methods annotated with this are invoked
+ * when database records are deleted.
  *
  * @author lujun
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 
 @Target({ElementType.METHOD})
@@ -19,25 +22,28 @@ import java.lang.annotation.*;
 public @interface OnDeleteEvent {
 
     /**
-     * canal 指令
-     * default for all
-     * @return canal destination
+     * The Canal destination (canal instance name) to subscribe to.
+     * Defaults to empty, meaning all destinations.
+     *
+     * @return the canal destination
      */
     @AliasFor(annotation = OnCanalEvent.class)
     String destination() default "";
 
 
     /**
-     * 数据库实例
-     * @return 数据库实例
+     * The database schema (instance) to subscribe to.
+     *
+     * @return the schema name
      */
     @AliasFor(annotation = OnCanalEvent.class)
     String schema();
 
     /**
-     * 监听的表
-     * default for all
-     * @return 监听的表
+     * The table to listen on.
+     * Defaults to {@code "*"}, meaning all tables.
+     *
+     * @return the table name
      */
     @AliasFor(annotation = OnCanalEvent.class)
     String table();

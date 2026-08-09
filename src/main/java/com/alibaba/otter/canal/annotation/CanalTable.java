@@ -2,29 +2,39 @@ package com.alibaba.otter.canal.annotation;
 
 import java.lang.annotation.*;
 
+/**
+ * Binds an {@link com.alibaba.otter.canal.handler.EntryHandler} to a specific Canal destination,
+ * database schema and/or table so that only matching change events are routed to it.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface CanalTable {
 
     /**
-     * canal 指令
-     * default for all
-     * @return destination name
+     * The Canal destination (canal instance name) to match.
+     * Defaults to empty, meaning all destinations.
+     *
+     * @return the destination name
      */
     String destination() default "";
 
     /**
-     * 数据库实例
-     * default for all
-     * @return schema name
+     * The database schema (instance) to match.
+     * Defaults to {@code "*"}, meaning all schemas.
+     *
+     * @return the schema name
      */
     String schema() default "*";
 
     /**
-     * 监听的表
-     * default for all
-     * @return table name
+     * The table to listen on.
+     * Defaults to {@code "*"}, meaning all tables.
+     *
+     * @return the table name
      */
     String table() default "*";
 

@@ -10,16 +10,33 @@ import com.alibaba.otter.canal.protocol.Message;
 import java.util.List;
 
 /**
- * 同步处理 Message
+ * Synchronous {@link com.alibaba.otter.canal.handler.AbstractMessageHandler} that processes
+ * each {@link Message} on the calling thread.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 public class SyncMessageHandlerImpl extends AbstractMessageHandler {
 
 
+    /**
+     * Constructs a new synchronous message handler using default subscribed entry types.
+     *
+     * @param entryHandlers  the programmatic entry handlers
+     * @param rowDataHandler the row-data handler
+     */
     public SyncMessageHandlerImpl(List<? extends EntryHandler> entryHandlers,
                                   RowDataHandler<CanalEntry.RowData> rowDataHandler) {
         super(null, entryHandlers, rowDataHandler);
     }
 
+    /**
+     * Constructs a new synchronous message handler with the given subscribed entry types.
+     *
+     * @param subscribeTypes the entry types to subscribe to
+     * @param entryHandlers  the programmatic entry handlers
+     * @param rowDataHandler the row-data handler
+     */
     public SyncMessageHandlerImpl(List<CanalEntry.EntryType> subscribeTypes,
                                   List<? extends EntryHandler> entryHandlers,
                                   RowDataHandler<CanalEntry.RowData> rowDataHandler) {

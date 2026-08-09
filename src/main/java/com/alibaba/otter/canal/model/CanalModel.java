@@ -7,7 +7,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * canal 消息模型
+ * Model object describing a single Canal change-data message, exposed to event listeners
+ * via the thread-local {@link com.alibaba.otter.canal.context.CanalContext}.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 @Setter
 @Getter
@@ -16,34 +20,34 @@ public class CanalModel {
 
 
     /**
-     * 消息id
+     * The Canal message/batch id.
      */
     private long id;
 
     /**
-     * 库名
+     * The Canal destination (canal instance name).
      */
     private String destination;
 
     /**
-     * 库名
+     * The database schema (instance) name.
      */
     private String schema;
     /**
-     * 表名
+     * The table name.
      */
     private String table;
     /**
-     * 事件类型
+     * The Canal event type (INSERT, UPDATE, DELETE, etc.).
      */
     private CanalEntry.EventType eventType;
     /**
-     * binlog executeTime
+     * The original binlog execute time.
      */
     private Long executeTime;
 
     /**
-     * dml build timeStamp
+     * The timestamp at which the DML message was built.
      */
     private Long createTime;
 

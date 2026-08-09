@@ -5,9 +5,12 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import java.lang.annotation.*;
 
 /**
- * 监听数据库的操作
+ * Marks a method as a listener for Canal database change events, optionally
+ * filtering by destination, schema, table and event type.
  *
  * @author lujun
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 
 @Target({ElementType.TYPE})
@@ -16,30 +19,34 @@ import java.lang.annotation.*;
 public @interface OnCanalEvent {
 
     /**
-     * canal 指令
-     * default for all
-     * @return destination name
+     * The Canal destination (canal instance name) to subscribe to.
+     * Defaults to empty, meaning all destinations.
+     *
+     * @return the destination name
      */
     String destination() default "";
 
     /**
-     * 数据库实例
-     * default for all
-     * @return schema name
+     * The database schema (instance) to subscribe to.
+     * Defaults to {@code "*"}, meaning all schemas.
+     *
+     * @return the schema name
      */
     String schema() default "*";
 
     /**
-     * 监听的表
-     * default for all
-     * @return table name
+     * The table to listen on.
+     * Defaults to {@code "*"}, meaning all tables.
+     *
+     * @return the table name
      */
     String table() default "*";
 
     /**
-     * 监听操作的类型
-     * default for all\
-     * @return CanalEntry.EventType
+     * The Canal event types (INSERT, UPDATE, DELETE, etc.) to listen for.
+     * Empty array means all event types.
+     *
+     * @return the matching event types
      */
     CanalEntry.EventType[] eventType();
 

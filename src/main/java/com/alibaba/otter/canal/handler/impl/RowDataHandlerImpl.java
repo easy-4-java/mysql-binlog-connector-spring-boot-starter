@@ -12,7 +12,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * 处理行数据
+ * {@link RowDataHandler} implementation that processes {@link CanalEntry.RowData} instances,
+ * dispatching INSERT, UPDATE and DELETE events to the entry handler.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 public class RowDataHandlerImpl implements RowDataHandler<CanalEntry.RowData> {
 
@@ -20,6 +24,11 @@ public class RowDataHandlerImpl implements RowDataHandler<CanalEntry.RowData> {
     private IModelFactory<List<CanalEntry.Column>> modelFactory;
 
 
+    /**
+     * Constructs a new handler backed by the given model factory.
+     *
+     * @param modelFactory the factory used to build model instances from Canal columns
+     */
     public RowDataHandlerImpl(IModelFactory modelFactory) {
         this.modelFactory = modelFactory;
     }

@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Core configuration properties for the Canal client, bound to the {@code canal} prefix.
  *
  * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 @ConfigurationProperties(CanalProperties.PREFIX)
 @Data
@@ -39,42 +41,41 @@ public class CanalProperties {
 	public static final String CANAL_INSTANCES = PREFIX + "." + "instances";
 
 	/**
-	 * The mode of the Canal Client.
-	 * simple,cluster,kafka,rocketMQ
+	 * The Canal client mode. One of simple, cluster, kafka, rocketMQ.
 	 */
 	private ClientMode mode = ClientMode.simple;
 	/**
-	 * 是否异步
+	 * Whether message handling should be asynchronous. Defaults to {@code null} (treated as enabled).
 	 */
 	private Boolean async;
 	/**
-	 * The client subscribes to filter, and the corresponding filter information will be updated when the subscription is repeated
+	 * The client subscription filter; the corresponding filter is updated on repeated subscriptions.
 	 * <pre>
-	 * 说明：
-	 * a. 如果本次订阅中filter信息为空，则直接使用canal server服务端配置的filter信息
-	 * b. 如果本次订阅中filter信息不为空，目前会直接替换canal server服务端配置的filter信息，以本次提交的为准
+	 * Notes:
+	 * a. When the filter is empty, the Canal server-side filter is used.
+	 * b. When the filter is non-empty, it replaces the Canal server-side filter.
 	 * </pre>
 	 */
 	private String filter = StringUtils.EMPTY;
 	/**
-	 * The number of messages read from the Canal service in each time
+	 * The number of messages read from the Canal service per batch.
 	 */
 	private Integer batchSize = 1000;
 	/**
-	 *  -1代表不做timeout控制
+	 * Read timeout in the configured time unit. {@code -1} disables timeout control.
 	 */
 	private Long timeout = -1L;
 	/**
-	 * 获取数据超时时间单位
+	 * The time unit of {@link #timeout}.
 	 */
 	private TimeUnit unit = TimeUnit.SECONDS;
 	/**
-	 * 指定订阅的事件类型，主要用于标识事务的开始，变更数据，结束
+	 * Subscribed entry types, mainly used to flag transaction begin, row-data change and transaction end.
 	 */
 	private List<CanalEntry.EntryType> subscribeTypes = Arrays.asList(CanalEntry.EntryType.ROWDATA);
 
 	/**
-	 * Canal Server Mode. simple, cluster, kafka, pulsarmq, rabbitmq, rocketmq
+	 * Canal server modes. One of simple, cluster, kafka, pulsarmq, rabbitmq, rocketmq.
 	 */
 	public enum ClientMode {
 		simple, cluster, kafka, pulsarmq, rabbitmq, rocketmq
