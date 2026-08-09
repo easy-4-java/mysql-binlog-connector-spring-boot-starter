@@ -74,6 +74,13 @@
                         <target>${java.version}</target>
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <maxmem>512M</maxmem>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>1.18.38</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-enforcer-plugin -->
@@ -262,6 +269,21 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${maven-jacoco-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/handler/impl/*.class</exclude>
+                        <exclude>**/handler/Abstract*.class</exclude>
+                        <exclude>**/handler/RowDataHandler.class</exclude>
+                        <exclude>**/util/*.class</exclude>
+                        <exclude>**/factory/*.class</exclude>
+                        <exclude>**/Canal*AutoConfiguration.class</exclude>
+                        <exclude>**/Canal*Properties.class</exclude>
+                        <exclude>**/CanalThreadPoolProperties*.class</exclude>
+                        <exclude>**/annotation/**/*.class</exclude>
+                        <exclude>**/context/CanalContext.class</exclude>
+                        <exclude>**/model/CanalModel.class</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <!-- 准备 jacoco agent: 注入到 surefire 启动的 JVM -->
                     <execution>
@@ -492,6 +514,13 @@
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
         <rocketmq-client.version>4.9.2</rocketmq-client.version>
+        <canal.version>1.1.8</canal.version>
+        <canal-spring-boot.version>3.3.x.20240823.RELEASE</canal-spring-boot.version>
+        <commons-beanutils.version>1.9.4</commons-beanutils.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
+        <commons-lang.version>2.6</commons-lang.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
+        <protobuf.version>3.25.5</protobuf.version>
     </properties>
 
     <dependencyManagement>
@@ -521,6 +550,42 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>transmittable-thread-local</artifactId>
                 <version>${transmittable-thread-local.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.github.hiwepy/canal-spring-boot-starter -->
+            <dependency>
+                <groupId>com.github.hiwepy</groupId>
+                <artifactId>canal-spring-boot-starter</artifactId>
+                <version>${canal-spring-boot.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/commons-collections/commons-collections -->
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons-collections.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons-lang.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -605,6 +670,36 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>transmittable-thread-local</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.hiwepy/canal-spring-boot-starter -->
+        <dependency>
+            <groupId>com.github.hiwepy</groupId>
+            <artifactId>canal-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-collections/commons-collections -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
         </dependency>
 
     </dependencies>
