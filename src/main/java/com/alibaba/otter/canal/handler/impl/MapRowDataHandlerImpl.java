@@ -14,7 +14,7 @@ import java.util.Objects;
  * {@link RowDataHandler} implementation that processes row data represented as a list of
  * column-name-to-value maps, dispatching INSERT, UPDATE and DELETE events to the entry handler.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class MapRowDataHandlerImpl implements RowDataHandler<List<Map<String, String>>> {

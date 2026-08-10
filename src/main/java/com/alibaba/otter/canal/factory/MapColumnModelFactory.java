@@ -13,7 +13,7 @@ import java.util.Map;
  * {@link IModelFactory} implementation that builds entity instances from a column-name-to-value
  * map, using MyBatis-Plus table metadata to map columns to entity properties.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class MapColumnModelFactory extends AbstractModelFactory<Map<String, String>> {

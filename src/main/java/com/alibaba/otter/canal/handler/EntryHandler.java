@@ -4,7 +4,7 @@ package com.alibaba.otter.canal.handler;
  * Callback interface for handling Canal change-data entries of a given entity type.
  *
  * @param <R> the entity type produced for each change event
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public interface EntryHandler<R> {

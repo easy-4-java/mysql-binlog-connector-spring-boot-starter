@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * based on destination, schema, table and event type, and for building the lookup keys used
  * by the message handlers.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class HandlerUtil {

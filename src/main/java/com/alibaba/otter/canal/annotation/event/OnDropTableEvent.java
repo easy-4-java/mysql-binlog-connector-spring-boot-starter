@@ -10,8 +10,8 @@ import java.lang.annotation.*;
  * Listener annotation for a {@code DROP TABLE} event; methods annotated with this are
  * invoked when a database table is dropped.
  *
- * @author lujun
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 

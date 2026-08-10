@@ -34,7 +34,7 @@ import java.util.List;
  * Utility methods for formatting and printing Canal messages, entries and columns, and for
  * extracting GTID-related metadata from a Canal entry header.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class CanalUtils {

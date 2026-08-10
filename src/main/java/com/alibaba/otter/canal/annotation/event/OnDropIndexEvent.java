@@ -10,8 +10,8 @@ import java.lang.annotation.*;
  * Listener annotation for a {@code DROP INDEX} event; methods annotated with this are
  * invoked when a database index is dropped.
  *
- * @author lujun
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Target({ElementType.METHOD})

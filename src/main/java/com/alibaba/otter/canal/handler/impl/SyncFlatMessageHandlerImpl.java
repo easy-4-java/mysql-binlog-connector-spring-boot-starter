@@ -14,7 +14,7 @@ import java.util.Map;
  * Synchronous {@link com.alibaba.otter.canal.handler.AbstractFlatMessageHandler} that processes
  * each {@link FlatMessage} on the calling thread.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class SyncFlatMessageHandlerImpl extends AbstractFlatMessageHandler {

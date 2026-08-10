@@ -19,7 +19,7 @@ import java.net.InetSocketAddress;
  * Factory methods for creating Canal connectors (simple, cluster, Kafka, PulsarMQ, RabbitMQ
  * and RocketMQ) from the corresponding starter properties.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class ConnectorUtil {

@@ -10,8 +10,8 @@ import java.util.Arrays;
  * Holds a reference to a Canal event listener bean together with the method to invoke
  * and the matching {@link OnCanalEvent} annotation metadata.
  *
- * @author lujun
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class CanalEventHolder {

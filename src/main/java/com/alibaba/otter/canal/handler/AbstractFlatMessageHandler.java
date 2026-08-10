@@ -27,7 +27,7 @@ import java.util.stream.Stream;
  * annotation-based event holders or {@link EntryHandler} instances for each change event
  * and delegates row-data processing to a {@link RowDataHandler}.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Slf4j

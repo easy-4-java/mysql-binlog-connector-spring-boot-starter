@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Utilities for creating executors, thread factories and threads with consistent naming,
  * and for shutting down executors gracefully.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Slf4j

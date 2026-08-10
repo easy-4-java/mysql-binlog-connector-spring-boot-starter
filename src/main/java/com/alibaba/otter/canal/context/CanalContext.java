@@ -7,7 +7,7 @@ import com.alibaba.ttl.TransmittableThreadLocal;
  * Thread-local Canal context that exposes the current {@link CanalModel} to event listeners,
  * using a transmittable thread local so that the context propagates across thread pools.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class CanalContext {

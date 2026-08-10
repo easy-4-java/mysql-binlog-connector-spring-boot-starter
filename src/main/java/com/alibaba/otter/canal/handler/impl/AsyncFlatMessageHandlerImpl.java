@@ -15,7 +15,7 @@ import java.util.Map;
  * Asynchronous {@link com.alibaba.otter.canal.handler.AbstractFlatMessageHandler} that
  * dispatches each {@link FlatMessage} to a thread pool for processing.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class AsyncFlatMessageHandlerImpl extends AbstractFlatMessageHandler {

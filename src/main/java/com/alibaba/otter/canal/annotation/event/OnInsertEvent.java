@@ -10,8 +10,8 @@ import java.lang.annotation.*;
  * Listener annotation for an {@code INSERT} event; methods annotated with this are
  * triggered when an insert operation occurs.
  *
- * @author lujun
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 

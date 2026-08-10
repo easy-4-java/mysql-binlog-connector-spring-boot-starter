@@ -6,7 +6,7 @@ import java.lang.annotation.*;
  * Binds an {@link com.alibaba.otter.canal.handler.EntryHandler} to a specific Canal destination,
  * database schema and/or table so that only matching change events are routed to it.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Target({ElementType.TYPE})

@@ -14,7 +14,7 @@ import java.util.List;
  * Asynchronous {@link com.alibaba.otter.canal.handler.AbstractMessageHandler} that
  * dispatches each {@link Message} to a thread pool for processing.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class AsyncMessageHandlerImpl extends AbstractMessageHandler {

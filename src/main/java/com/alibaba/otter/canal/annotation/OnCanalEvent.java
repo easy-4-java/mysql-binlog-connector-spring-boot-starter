@@ -8,8 +8,8 @@ import java.lang.annotation.*;
  * Marks a method as a listener for Canal database change events, optionally
  * filtering by destination, schema, table and event type.
  *
- * @author lujun
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 

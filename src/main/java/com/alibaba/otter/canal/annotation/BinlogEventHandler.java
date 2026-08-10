@@ -10,7 +10,7 @@ import java.lang.annotation.*;
  * so that annotated beans are registered as Spring components.
  * <p>Apply this annotation to a class that should receive Canal binlog change events.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Target({ElementType.TYPE})

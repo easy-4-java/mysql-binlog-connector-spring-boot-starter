@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Core configuration properties for the Canal client, bound to the {@code canal} prefix.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @ConfigurationProperties(CanalProperties.PREFIX)

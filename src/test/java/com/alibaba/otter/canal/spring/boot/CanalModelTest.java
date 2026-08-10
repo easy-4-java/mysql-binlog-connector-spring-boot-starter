@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for {@link CanalModel}.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 class CanalModelTest {
 

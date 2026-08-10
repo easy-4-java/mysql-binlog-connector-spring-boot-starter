@@ -10,8 +10,8 @@ import java.lang.annotation.*;
  * Listener annotation for a {@code CREATE TABLE} event; methods annotated with this are
  * invoked when a database table is created. The schema is checked first and created if absent.
  *
- * @author lujun
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Target({ElementType.METHOD})

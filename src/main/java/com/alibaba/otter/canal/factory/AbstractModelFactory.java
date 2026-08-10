@@ -11,7 +11,7 @@ import com.alibaba.otter.canal.util.HandlerUtil;
  * the {@link EntryHandler} generic type information and delegates creation to subclasses.
  *
  * @param <T> the source data type used to build model instances
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public abstract class AbstractModelFactory<T> implements IModelFactory<T> {

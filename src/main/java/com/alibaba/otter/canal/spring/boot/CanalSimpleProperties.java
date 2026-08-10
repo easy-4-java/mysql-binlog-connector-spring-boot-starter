@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Configuration properties for the Canal simple-mode client, bound to the {@code canal.simple} prefix.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @ConfigurationProperties(CanalSimpleProperties.PREFIX)

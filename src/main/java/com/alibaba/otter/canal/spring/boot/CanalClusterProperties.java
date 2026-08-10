@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Configuration properties for the Canal cluster-mode client, bound to the {@code canal.cluster} prefix.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @ConfigurationProperties(CanalClusterProperties.PREFIX)

@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * maps from a list of {@link CanalEntry.Column} values, using MyBatis-Plus table metadata
  * to map columns to entity properties.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class EntryColumnModelFactory extends AbstractModelFactory<List<CanalEntry.Column>> {

@@ -6,7 +6,7 @@ import java.util.StringJoiner;
  * Built-in constants for Canal destination, schema and table matching, including the
  * wildcard {@link #ALL} that matches every destination, schema and table.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public enum TableNameEnum {

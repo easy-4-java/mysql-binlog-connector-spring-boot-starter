@@ -10,7 +10,7 @@ import lombok.Setter;
  * Model object describing a single Canal change-data message, exposed to event listeners
  * via the thread-local {@link com.alibaba.otter.canal.context.CanalContext}.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Setter
