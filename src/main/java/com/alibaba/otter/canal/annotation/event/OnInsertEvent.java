@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 /**
  * 新增操作监听器 发生insert时 会触发
  *
- * @author lujun
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 
 @Target({ElementType.METHOD})

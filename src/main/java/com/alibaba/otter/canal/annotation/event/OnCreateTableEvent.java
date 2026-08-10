@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 /**
  * 表结构发生变化，新增时，先判断数据库实例是否存在，不存在则创建
  *
- * @author lujun
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
