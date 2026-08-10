@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 /**
  * 创建索引的操作
  *
- * @author lujun
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

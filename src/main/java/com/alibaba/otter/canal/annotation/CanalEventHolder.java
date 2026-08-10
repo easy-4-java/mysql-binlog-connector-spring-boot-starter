@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * 监听 canal 操作
  *
- * @author lujun
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public class CanalEventHolder {
 
