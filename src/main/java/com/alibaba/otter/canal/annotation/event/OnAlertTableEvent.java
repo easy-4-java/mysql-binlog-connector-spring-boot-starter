@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 
 /**
  * 次改字段属性监听器
- * @author lujun
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
