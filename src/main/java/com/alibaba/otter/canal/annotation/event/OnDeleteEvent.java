@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 /**
  * 删除操作监听器 当删除数据库的记录时 添加该注解的方法会被调用
  *
- * @author lujun
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 
 @Target({ElementType.METHOD})

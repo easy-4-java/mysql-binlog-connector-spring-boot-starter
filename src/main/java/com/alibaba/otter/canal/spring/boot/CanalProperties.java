@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 @ConfigurationProperties(CanalProperties.PREFIX)
 @Data
