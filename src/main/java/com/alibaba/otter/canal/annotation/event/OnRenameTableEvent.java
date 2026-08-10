@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 /**
  * 重命名表
  *
- * @author lujun
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 
 @Target({ElementType.METHOD})

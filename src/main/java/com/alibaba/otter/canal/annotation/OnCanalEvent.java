@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 /**
  * 监听数据库的操作
  *
- * @author lujun
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 
 @Target({ElementType.TYPE})
