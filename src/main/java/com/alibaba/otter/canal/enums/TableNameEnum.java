@@ -66,6 +66,10 @@ public enum TableNameEnum {
     public String getTable() {
         return table;
     }
+    /**
+     * <p>To string.</p>
+     * @return the string
+     */
 
     @Override
     public String toString() {

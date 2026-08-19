@@ -75,6 +75,11 @@ public abstract class AbstractMessageHandler implements MessageHandler<Message>,
     protected boolean isSubscribed(CanalEntry.EntryType entryType) {
         return subscribeTypes.contains(entryType);
     }
+    /**
+     * <p>Handle message.</p>
+     * @param destination the destination
+     * @param message the message
+     */
 
     @Override
     public void handleMessage(String destination, Message message) {
@@ -175,6 +180,7 @@ public abstract class AbstractMessageHandler implements MessageHandler<Message>,
             CanalContext.removeModel();
         }
     }
+    /** Sets the application context. */
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

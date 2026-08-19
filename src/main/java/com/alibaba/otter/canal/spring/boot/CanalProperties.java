@@ -24,12 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Core configuration properties for the Canal client, bound to the {@code canal} prefix.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 1.0.0
- */
 @ConfigurationProperties(CanalProperties.PREFIX)
 @Data
 public class CanalProperties {
@@ -40,42 +34,18 @@ public class CanalProperties {
 	public static final String CANAL_MODE = PREFIX + "." + "mode";
 	public static final String CANAL_INSTANCES = PREFIX + "." + "instances";
 
-	/**
-	 * The Canal client mode. One of simple, cluster, kafka, rocketMQ.
-	 */
 	private ClientMode mode = ClientMode.simple;
-	/**
-	 * Whether message handling should be asynchronous. Defaults to {@code null} (treated as enabled).
-	 */
 	private Boolean async;
-	/**
-	 * The client subscription filter; the corresponding filter is updated on repeated subscriptions.
-	 * <pre>
-	 * Notes:
-	 * a. When the filter is empty, the Canal server-side filter is used.
-	 * b. When the filter is non-empty, it replaces the Canal server-side filter.
-	 * </pre>
-	 */
 	private String filter = StringUtils.EMPTY;
-	/**
-	 * The number of messages read from the Canal service per batch.
-	 */
 	private Integer batchSize = 1000;
-	/**
-	 * Read timeout in the configured time unit. {@code -1} disables timeout control.
-	 */
 	private Long timeout = -1L;
-	/**
-	 * The time unit of {@link #timeout}.
-	 */
 	private TimeUnit unit = TimeUnit.SECONDS;
-	/**
-	 * Subscribed entry types, mainly used to flag transaction begin, row-data change and transaction end.
-	 */
 	private List<CanalEntry.EntryType> subscribeTypes = Arrays.asList(CanalEntry.EntryType.ROWDATA);
 
 	/**
 	 * Canal server modes. One of simple, cluster, kafka, pulsarmq, rabbitmq, rocketmq.
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
 	 */
 	public enum ClientMode {
 		simple, cluster, kafka, pulsarmq, rabbitmq, rocketmq

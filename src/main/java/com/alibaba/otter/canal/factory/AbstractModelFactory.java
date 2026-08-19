@@ -15,6 +15,13 @@ import com.alibaba.otter.canal.util.HandlerUtil;
  * @since 1.0.0
  */
 public abstract class AbstractModelFactory<T> implements IModelFactory<T> {
+    /**
+     * <p>New instance.</p>
+     * @param entryHandler the entry handler
+     * @param t the t
+     * @return the < r>  r
+     * @throws Exception if an error occurs
+     */
 
     @Override
     public <R> R newInstance(EntryHandler entryHandler, T t) throws Exception {

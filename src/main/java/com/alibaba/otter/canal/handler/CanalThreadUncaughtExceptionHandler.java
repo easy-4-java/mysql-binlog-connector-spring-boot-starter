@@ -11,6 +11,11 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class CanalThreadUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
+    /**
+     * <p>Uncaught exception.</p>
+     * @param t the t
+     * @param e the e
+     */
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {

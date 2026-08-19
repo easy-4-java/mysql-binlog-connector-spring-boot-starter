@@ -51,6 +51,11 @@ public class AsyncFlatMessageHandlerImpl extends AbstractFlatMessageHandler {
         super(subscribeTypes, entryHandlers, rowDataHandler);
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
     }
+    /**
+     * <p>Handle message.</p>
+     * @param destination the destination
+     * @param flatMessage the flat message
+     */
 
     @Override
     public void handleMessage(String destination, FlatMessage flatMessage) {

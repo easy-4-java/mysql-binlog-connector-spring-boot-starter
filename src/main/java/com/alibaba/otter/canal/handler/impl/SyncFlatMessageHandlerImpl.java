@@ -42,6 +42,11 @@ public class SyncFlatMessageHandlerImpl extends AbstractFlatMessageHandler {
                                       RowDataHandler<List<Map<String, String>>> rowDataHandler) {
         super(subscribeTypes, entryHandlers, rowDataHandler);
     }
+    /**
+     * <p>Handle message.</p>
+     * @param destination the destination
+     * @param flatMessage the flat message
+     */
 
     @Override
     public void handleMessage(String destination, FlatMessage flatMessage) {

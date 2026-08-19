@@ -126,6 +126,11 @@ public final class ThreadUtils {
     public static ThreadFactory newGenericThreadFactory(final String processName, final boolean isDaemon) {
         return new ThreadFactory() {
             private AtomicInteger threadIndex = new AtomicInteger(0);
+            /**
+             * <p>New thread.</p>
+             * @param r the r
+             * @return the thread
+             */
 
             @Override
             public Thread newThread(Runnable r) {
@@ -149,6 +154,11 @@ public final class ThreadUtils {
                                                         final boolean isDaemon) {
         return new ThreadFactory() {
             private AtomicInteger threadIndex = new AtomicInteger(0);
+            /**
+             * <p>New thread.</p>
+             * @param r the r
+             * @return the thread
+             */
 
             @Override
             public Thread newThread(Runnable r) {
@@ -171,6 +181,11 @@ public final class ThreadUtils {
         Thread thread = new Thread(runnable, name);
         thread.setDaemon(daemon);
         thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            /**
+             * <p>Uncaught exception.</p>
+             * @param t the t
+             * @param e the e
+             */
             @Override
             public void uncaughtException(Thread t, Throwable e) {
                 log.error("Uncaught exception in thread '" + t.getName() + "':", e);

@@ -10,7 +10,6 @@ package com.alibaba.otter.canal.handler;
 public interface EntryHandler<R> {
 
 
-
     /**
      * Called when a row is inserted.
      *

@@ -42,6 +42,11 @@ public class SyncMessageHandlerImpl extends AbstractMessageHandler {
                                   RowDataHandler<CanalEntry.RowData> rowDataHandler) {
         super(subscribeTypes, entryHandlers, rowDataHandler);
     }
+    /**
+     * <p>Handle message.</p>
+     * @param destination the destination
+     * @param message the message
+     */
 
     @Override
     public void handleMessage(String destination, Message message) {

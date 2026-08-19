@@ -32,6 +32,14 @@ public class RowDataHandlerImpl implements RowDataHandler<CanalEntry.RowData> {
     public RowDataHandlerImpl(IModelFactory modelFactory) {
         this.modelFactory = modelFactory;
     }
+    /**
+     * <p>Handler row data.</p>
+     * @param rowData the row data
+     * @param entryHandler the entry handler
+     * @param eventType the event type
+     * @return the < r> void
+     * @throws Exception if an error occurs
+     */
 
     @Override
     public <R> void handlerRowData(CanalEntry.RowData rowData, EntryHandler<R> entryHandler, CanalEntry.EventType eventType) throws Exception {

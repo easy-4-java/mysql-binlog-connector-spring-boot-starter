@@ -9,12 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Configuration properties for the Canal cluster-mode client, bound to the {@code canal.cluster} prefix.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 1.0.0
- */
 @ConfigurationProperties(CanalClusterProperties.PREFIX)
 @Getter
 @Setter
@@ -26,13 +20,12 @@ public class CanalClusterProperties {
     private static final int DEFAULT_MAX_SLEEP_MS = Integer.MAX_VALUE;
     public static final String PREFIX = "canal.cluster";
 
-    /**
-     * The cluster connector instances to create.
-     */
     private List<CanalClusterProperties.Instance> instances = new ArrayList<>();
 
     /**
      * Configuration for a single Canal cluster connector instance.
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
      */
     @Data
     public static class Instance {

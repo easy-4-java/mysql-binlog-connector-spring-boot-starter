@@ -50,6 +50,11 @@ public class AsyncMessageHandlerImpl extends AbstractMessageHandler {
         super(subscribeTypes, entryHandlers, rowDataHandler);
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
     }
+    /**
+     * <p>Handle message.</p>
+     * @param destination the destination
+     * @param message the message
+     */
 
     @Override
     public void handleMessage(String destination, Message message) {

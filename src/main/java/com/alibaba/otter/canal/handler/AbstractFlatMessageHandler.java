@@ -66,6 +66,11 @@ public abstract class AbstractFlatMessageHandler implements MessageHandler<FlatM
         this.tableHandlerMap = HandlerUtil.getTableHandlerMap(entryHandlers);
         this.rowDataHandler = rowDataHandler;
     }
+    /**
+     * <p>Handle message.</p>
+     * @param destination the destination
+     * @param flatMessage the flat message
+     */
 
     @Override
     public void handleMessage(String destination, FlatMessage flatMessage) {
@@ -171,6 +176,7 @@ public abstract class AbstractFlatMessageHandler implements MessageHandler<FlatM
             CanalContext.removeModel();
         }
     }
+    /** Sets the application context. */
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

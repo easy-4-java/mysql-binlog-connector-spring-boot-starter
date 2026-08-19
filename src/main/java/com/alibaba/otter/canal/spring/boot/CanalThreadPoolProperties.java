@@ -23,74 +23,30 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 
-/**
- * Configuration properties for the Canal thread pool, bound to the {@code canal.thread-pool} prefix.
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 1.0.0
- */
 @ConfigurationProperties(CanalThreadPoolProperties.PREFIX)
 @Data
 public class CanalThreadPoolProperties {
 
 	public static final String PREFIX = "canal.thread-pool";
 
-	/**
-	 * Set the ThreadPoolExecutor's core pool size. Default is 1.
-	 * positive.
-	 */
 	private int corePoolSize = 1;
 
-	/**
-	 * Set the ThreadPoolExecutor's maximum pool size. Default is the number of Processor.
-	 */
 	private int maxPoolSize = Runtime.getRuntime().availableProcessors();
 
-	/**
-	 * Set the capacity for the ThreadPoolExecutor's BlockingQueue. Default is Integer.MAX_VALUE.
-	 * Any positive value will lead to a LinkedBlockingQueue instance; any other value will lead to a SynchronousQueue instance.
-	 */
 	private int queueCapacity = Integer.MAX_VALUE;
 
-	/**
-	 * Set the ThreadPoolExecutor's keep-alive time. Default is 60 seconds.
-	 */
 	private Duration keepAlive = Duration.ofSeconds(60);
 
-	/**
-	 * Specify whether to allow core threads to time out. This enables dynamic
-	 * growing and shrinking even in combination with a non-zero queue (since
-	 * the max pool size will only grow once the queue is full).
-	 * <p>Default is "false".
-	 */
 	private boolean allowCoreThreadTimeOut = false;
 
 	private boolean waitForTasksToCompleteOnShutdown = false;
 
 	private int awaitTerminationSeconds = 0;
 
-	/**
-	 * Specify the prefix to use for the names of newly created threads.
-	 * Default is "RedisAsyncTaskExecutor-".
-	 */
 	private String threadNamePrefix = "RedisAsyncTaskExecutor-";
 
-	/**
-	 * Set whether this factory is supposed to create daemon threads,
-	 * just executing as long as the application itself is running.
-	 * <p>Default is "false": Concrete factories usually support explicit cancelling.
-	 * Hence, if the application shuts down, Runnables will by default finish their
-	 * execution.
-	 * <p>Specify "true" for eager shutdown of threads which still actively execute
-	 * a {@link Runnable} at the time that the application itself shuts down.
-	 */
 	private boolean daemon = false;
 
-	/**
-	 * Set the Rejected Policy to use for the ExecutorService.
-	 * Default is the ExecutorService's default abort policy.
-	 * @see java.util.concurrent.ThreadPoolExecutor.AbortPolicy
-	 */
 	private RejectedPolicy rejectedPolicy = RejectedPolicy.AbortPolicy;
 
 
@@ -100,6 +56,8 @@ public class CanalThreadPoolProperties {
 	 * AbortPolicy()        - throw a RejectedExecutionException
 	 * DiscardPolicy()      - silently discard the task
 	 * DiscardOldestPolicy()- discard the oldest queued task
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
 	 */
 	public enum RejectedPolicy {
 
@@ -121,6 +79,7 @@ public class CanalThreadPoolProperties {
 		private RejectedPolicy(Function<Object, RejectedExecutionHandler> function) {
 			this.function = function;
 		}
+		/** Gets the rejected execution handler. */
 
 		public RejectedExecutionHandler getRejectedExecutionHandler(){
 			return this.function.apply(null);

@@ -28,6 +28,13 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 public class EntryColumnModelFactory extends AbstractModelFactory<List<CanalEntry.Column>> {
+    /**
+     * <p>New instance.</p>
+     * @param entryHandler the entry handler
+     * @param columns the columns
+     * @return the < r>  r
+     * @throws Exception if an error occurs
+     */
 
     @Override
     public <R> R newInstance(EntryHandler entryHandler, List<CanalEntry.Column> columns) throws Exception {
@@ -42,6 +49,14 @@ public class EntryColumnModelFactory extends AbstractModelFactory<List<CanalEntr
         }
         return null;
     }
+    /**
+     * <p>New instance.</p>
+     * @param entryHandler the entry handler
+     * @param columns the columns
+     * @param updateColumn the update column
+     * @return the < r>  r
+     * @throws Exception if an error occurs
+     */
 
     @Override
     public <R> R newInstance(EntryHandler entryHandler, List<CanalEntry.Column> columns, Set<String> updateColumn) throws Exception {

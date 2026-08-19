@@ -50,6 +50,10 @@ public class CanalModel {
      * The timestamp at which the DML message was built.
      */
     private Long createTime;
+    /**
+     * <p>To string.</p>
+     * @return the string
+     */
 
     @Override
     public String toString() {

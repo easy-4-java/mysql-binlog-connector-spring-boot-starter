@@ -29,6 +29,14 @@ public class MapRowDataHandlerImpl implements RowDataHandler<List<Map<String, St
     public MapRowDataHandlerImpl(IModelFactory<Map<String, String>> modelFactory) {
         this.modelFactory = modelFactory;
     }
+    /**
+     * <p>Handler row data.</p>
+     * @param list the list
+     * @param entryHandler the entry handler
+     * @param eventType the event type
+     * @return the < r> void
+     * @throws Exception if an error occurs
+     */
 
     @Override
     public <R> void handlerRowData(List<Map<String, String>> list, EntryHandler<R> entryHandler, CanalEntry.EventType eventType) throws Exception{
