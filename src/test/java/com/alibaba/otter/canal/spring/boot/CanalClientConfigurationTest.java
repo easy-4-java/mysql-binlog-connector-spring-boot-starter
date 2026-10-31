@@ -5,9 +5,17 @@ import com.alibaba.otter.canal.client.SimpleCanalClient;
 import com.alibaba.otter.canal.client.impl.ClusterCanalConnector;
 import com.alibaba.otter.canal.client.impl.SimpleCanalConnector;
 import com.alibaba.otter.canal.handler.MessageHandler;
+import com.alibaba.otter.canal.handler.EntryHandler;
+import com.alibaba.otter.canal.handler.RowDataHandler;
+import com.alibaba.otter.canal.handler.impl.AsyncMessageHandlerImpl;
+import com.alibaba.otter.canal.handler.impl.RowDataHandlerImpl;
+import com.alibaba.otter.canal.handler.impl.SyncMessageHandlerImpl;
+import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.alibaba.otter.canal.protocol.Message;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -64,5 +72,45 @@ class CanalClientConfigurationTest {
         ClusterCanalConnector connector = (ClusterCanalConnector) connectors.get(0);
         assertThat(connector.getAccessStrategy()).isNotNull();
         assertThat(connector.getRetryTimes()).isEqualTo(instance.getRetryTimes());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void simpleConfigurationWiresSynchronousAndAsynchronousHandlers() {
+        CanalSimpleClientAutoConfiguration configuration = new CanalSimpleClientAutoConfiguration();
+        CanalProperties properties = new CanalProperties();
+        ObjectProvider<EntryHandler> provider = mock(ObjectProvider.class);
+        when(provider.stream()).thenAnswer(invocation -> Stream.empty());
+        RowDataHandler<CanalEntry.RowData> rows = mock(RowDataHandler.class);
+        ThreadPoolTaskExecutor executor = mock(ThreadPoolTaskExecutor.class);
+
+        assertThat(configuration.rowDataHandler()).isInstanceOf(RowDataHandlerImpl.class);
+        MessageHandler sync = configuration.syncMessageHandler(properties, rows, provider);
+        MessageHandler async = configuration.asyncMessageHandler(properties, rows, provider, executor);
+        assertThat(sync).isInstanceOf(SyncMessageHandlerImpl.class);
+        assertThat(async).isInstanceOf(AsyncMessageHandlerImpl.class);
+        sync.handleMessage("orders", new Message(0, List.of()));
+        async.handleMessage("orders", new Message(0, List.of()));
+        verify(executor).execute(any(Runnable.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void clusterConfigurationWiresSynchronousAndAsynchronousHandlers() {
+        CanalClusterClientAutoConfiguration configuration = new CanalClusterClientAutoConfiguration();
+        CanalProperties properties = new CanalProperties();
+        ObjectProvider<EntryHandler> provider = mock(ObjectProvider.class);
+        when(provider.stream()).thenAnswer(invocation -> Stream.empty());
+        RowDataHandler<CanalEntry.RowData> rows = mock(RowDataHandler.class);
+        ThreadPoolTaskExecutor executor = mock(ThreadPoolTaskExecutor.class);
+
+        assertThat(configuration.rowDataHandler()).isInstanceOf(RowDataHandlerImpl.class);
+        MessageHandler sync = configuration.syncMessageHandler(properties, rows, provider);
+        MessageHandler async = configuration.asyncMessageHandler(properties, rows, provider, executor);
+        assertThat(sync).isInstanceOf(SyncMessageHandlerImpl.class);
+        assertThat(async).isInstanceOf(AsyncMessageHandlerImpl.class);
+        sync.handleMessage("orders", new Message(0, List.of()));
+        async.handleMessage("orders", new Message(0, List.of()));
+        verify(executor).execute(any(Runnable.class));
     }
 }
