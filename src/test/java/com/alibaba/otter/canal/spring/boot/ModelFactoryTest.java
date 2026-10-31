@@ -2,6 +2,7 @@ package com.alibaba.otter.canal.spring.boot;
 
 import com.alibaba.otter.canal.factory.EntryColumnModelFactory;
 import com.alibaba.otter.canal.factory.MapColumnModelFactory;
+import com.alibaba.otter.canal.annotation.CanalTable;
 import com.alibaba.otter.canal.handler.EntryHandler;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -33,6 +34,9 @@ class ModelFactoryTest {
 
     static class BookHandler implements EntryHandler<Book> { }
 
+    @CanalTable
+    static class AllBooksHandler implements EntryHandler<Book> { }
+
     @BeforeAll
     static void initializeTableMetadata() {
         TableInfoHelper.initTableInfo(new MapperBuilderAssistant(new MybatisConfiguration(), ""), Book.class);
@@ -61,4 +65,20 @@ class ModelFactoryTest {
         Book empty = factory.newInstance(handler, List.of());
         assertThat(empty).isNull();
     }
+
+    @Test
+    void wildcardTypedHandlerStillBuildsBookInBothFactories() throws Exception {
+        AllBooksHandler handler = new AllBooksHandler();
+        Book fromMap = new MapColumnModelFactory().newInstance(handler, Map.of("title", "Typed map"));
+        assertThat(fromMap.getTitle()).isEqualTo("Typed map");
+
+        CanalEntry.Column title = CanalEntry.Column.newBuilder()
+                .setName("title").setValue("Typed columns").setUpdated(true).build();
+        EntryColumnModelFactory factory = new EntryColumnModelFactory();
+        Book full = factory.newInstance(handler, List.of(title));
+        Book updated = factory.newInstance(handler, List.of(title), Set.of("title"));
+        assertThat(full.getTitle()).isEqualTo("Typed columns");
+        assertThat(updated.getTitle()).isEqualTo("Typed columns");
+    }
 }
+
