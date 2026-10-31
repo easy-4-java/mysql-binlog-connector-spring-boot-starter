@@ -3,6 +3,8 @@ package com.alibaba.otter.canal.spring.boot;
 import com.alibaba.otter.canal.annotation.CanalTable;
 import com.alibaba.otter.canal.context.CanalContext;
 import com.alibaba.otter.canal.factory.IModelFactory;
+import com.alibaba.otter.canal.factory.EntryColumnModelFactory;
+import com.alibaba.otter.canal.factory.MapColumnModelFactory;
 import com.alibaba.otter.canal.handler.EntryHandler;
 import com.alibaba.otter.canal.handler.impl.RowDataHandlerImpl;
 import com.alibaba.otter.canal.handler.impl.MapRowDataHandlerImpl;
@@ -11,6 +13,9 @@ import com.alibaba.otter.canal.handler.impl.SyncMessageHandlerImpl;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.Message;
 import com.alibaba.otter.canal.protocol.FlatMessage;
+import com.baomidou.mybatisplus.core.MybatisConfiguration;
+import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
+import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -38,6 +43,42 @@ class MessageRoutingTest {
         @Override public void insert(String value) {
             throw new IllegalStateException("listener rejected " + value);
         }
+    }
+
+    @CanalTable
+    static class TypedWildcardListener implements EntryHandler<ModelFactoryTest.Book> {
+        ModelFactoryTest.Book inserted;
+        @Override public void insert(ModelFactoryTest.Book value) { inserted = value; }
+    }
+
+    @Test
+    void typedWildcardHandlerReceivesEntityThroughBothMessageFormats() {
+        TableInfoHelper.initTableInfo(new MapperBuilderAssistant(new MybatisConfiguration(), ""),
+                ModelFactoryTest.Book.class);
+        TypedWildcardListener listener = new TypedWildcardListener();
+        CanalEntry.Column title = CanalEntry.Column.newBuilder()
+                .setName("title").setValue("protobuf book").build();
+        CanalEntry.RowChange change = CanalEntry.RowChange.newBuilder()
+                .setEventType(CanalEntry.EventType.INSERT)
+                .addRowDatas(CanalEntry.RowData.newBuilder().addAfterColumns(title)).build();
+        CanalEntry.Entry entry = CanalEntry.Entry.newBuilder()
+                .setHeader(CanalEntry.Header.newBuilder()
+                        .setSchemaName("app").setTableName("books").buildPartial())
+                .setEntryType(CanalEntry.EntryType.ROWDATA)
+                .setStoreValue(change.toByteString()).buildPartial();
+        new SyncMessageHandlerImpl(List.of(listener), new RowDataHandlerImpl(new EntryColumnModelFactory()))
+                .handleMessage("orders", new Message(21, List.of(entry)));
+        assertThat(listener.inserted.getTitle()).isEqualTo("protobuf book");
+
+        FlatMessage flat = new FlatMessage(22);
+        flat.setDatabase("app");
+        flat.setTable("books");
+        flat.setType("INSERT");
+        flat.setData(List.of(Map.of("title", "flat book")));
+        new SyncFlatMessageHandlerImpl(List.of(listener), new MapRowDataHandlerImpl(new MapColumnModelFactory()))
+                .handleMessage("orders", flat);
+        assertThat(listener.inserted.getTitle()).isEqualTo("flat book");
+        assertThat(CanalContext.getModel()).isNull();
     }
 
     @SuppressWarnings("unchecked")
