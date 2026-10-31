@@ -85,4 +85,31 @@ class CanalUtilsTest {
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("parse event has an error");
     }
+
+    @Test
+    void reportsMalformedTransactionBoundaryPayloads() {
+        for (CanalEntry.EntryType type : List.of(
+                CanalEntry.EntryType.TRANSACTIONBEGIN,
+                CanalEntry.EntryType.TRANSACTIONEND)) {
+            CanalEntry.Entry entry = CanalEntry.Entry.newBuilder()
+                    .setHeader(header()).setEntryType(type)
+                    .setStoreValue(ByteString.copyFromUtf8("not protobuf")).buildPartial();
+            assertThatThrownBy(() -> CanalUtils.printEntry(List.of(entry)))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("parse event has an error");
+        }
+    }
+
+    @Test
+    void formatsPositionWithoutGtidWhenHeaderHasNone() {
+        CanalEntry.Entry entry = CanalEntry.Entry.newBuilder()
+                .setHeader(CanalEntry.Header.newBuilder()
+                        .setLogfileName("mysql-bin.000002")
+                        .setLogfileOffset(55).setExecuteTime(1000).buildPartial())
+                .buildPartial();
+        assertThat(CanalUtils.buildPositionForDump(entry))
+                .startsWith("mysql-bin.000002:55:1000(")
+                .doesNotContain("gtid(");
+    }
 }
+
