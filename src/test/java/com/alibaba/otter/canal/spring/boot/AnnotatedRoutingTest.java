@@ -75,6 +75,61 @@ class AnnotatedRoutingTest {
         public void onInsert() { count++; }
     }
 
+    interface GenericSink<T> {
+        void onInsert(T value);
+    }
+
+    @BinlogEventHandler
+    static class GenericListener implements GenericSink<CanalModel> {
+        int count;
+        CanalModel received;
+
+        @Override
+        @OnCanalEvent(eventType = {CanalEntry.EventType.INSERT})
+        public void onInsert(CanalModel model) {
+            count++;
+            received = model;
+        }
+    }
+
+    @Test
+    void genericBridgeDoesNotDuplicateProtobufOrFlatDelivery() {
+        GenericListener listener = new GenericListener();
+        ApplicationContext context = mock(ApplicationContext.class);
+        when(context.getBeansWithAnnotation(BinlogEventHandler.class))
+                .thenReturn(Map.of("generic", listener));
+        CanalEntry.RowChange change = CanalEntry.RowChange.newBuilder()
+                .setEventType(CanalEntry.EventType.INSERT).build();
+        CanalEntry.Entry entry = CanalEntry.Entry.newBuilder()
+                .setHeader(CanalEntry.Header.newBuilder()
+                        .setSchemaName("app").setTableName("books").buildPartial())
+                .setEntryType(CanalEntry.EntryType.ROWDATA)
+                .setStoreValue(change.toByteString()).buildPartial();
+
+        SyncMessageHandlerImpl protobuf = new SyncMessageHandlerImpl(
+                List.of(), mock(RowDataHandler.class));
+        protobuf.setApplicationContext(context);
+        protobuf.handleMessage("orders", new Message(11, List.of(entry)));
+        assertThat(listener.count).isEqualTo(1);
+        assertThat(listener.received).isNotNull();
+        assertThat(listener.received.getId()).isEqualTo(11);
+
+        FlatMessage flat = new FlatMessage(12);
+        flat.setDatabase("app");
+        flat.setTable("books");
+        flat.setType("INSERT");
+        flat.setData(List.of(Map.of("title", "book")));
+        flat.setEs(100L);
+        flat.setTs(200L);
+        SyncFlatMessageHandlerImpl flatHandler = new SyncFlatMessageHandlerImpl(
+                List.of(), mock(RowDataHandler.class));
+        flatHandler.setApplicationContext(context);
+        flatHandler.handleMessage("orders", flat);
+        assertThat(listener.count).isEqualTo(2);
+        assertThat(listener.received).isNotNull();
+        assertThat(listener.received.getId()).isEqualTo(12);
+    }
+
     @Test
     void destinationCaseKeepsSeparateListenersAcrossSequentialEvents() {
         UpperDestinationListener upper = new UpperDestinationListener();
