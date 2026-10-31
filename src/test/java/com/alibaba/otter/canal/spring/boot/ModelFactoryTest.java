@@ -58,6 +58,7 @@ class ModelFactoryTest {
         assertThat(full.getTitle()).isEqualTo("New title");
         assertThat(changed.getTitle()).isEqualTo("New title");
         assertThat(changed.getId()).isNull();
-        assertThat(factory.newInstance(handler, List.of())).isNull();
+        Book empty = factory.newInstance(handler, List.of());
+        assertThat(empty).isNull();
     }
 }
