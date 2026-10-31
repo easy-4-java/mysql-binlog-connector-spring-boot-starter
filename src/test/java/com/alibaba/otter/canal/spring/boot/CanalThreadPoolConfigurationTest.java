@@ -28,7 +28,7 @@ class CanalThreadPoolConfigurationTest {
             assertThat(threadName.get()).startsWith("canal-execute-thread-");
             assertThat(executor.getCorePoolSize()).isEqualTo(1);
             assertThat(executor.getMaxPoolSize()).isEqualTo(2);
-            assertThat(executor.getQueueCapacity()).isEqualTo(2);
+            assertThat(executor.getThreadPoolExecutor().getQueue().remainingCapacity()).isEqualTo(2);
         } finally {
             executor.shutdown();
         }
