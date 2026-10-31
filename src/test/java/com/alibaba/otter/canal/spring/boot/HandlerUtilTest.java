@@ -54,6 +54,9 @@ class HandlerUtilTest {
     @CanalTable(destination = "orders", schema = "app", table = "books")
     static class OrdersBookHandler implements EntryHandler<String> { }
 
+    @CanalTable
+    static class AllTablesHandler implements EntryHandler<String> { }
+
     @Test
     void destinationSpecificHandlerWinsThenFallsBackToWildcard() {
         WildcardBookHandler wildcard = new WildcardBookHandler();
@@ -68,4 +71,15 @@ class HandlerUtilTest {
         assertThat(HandlerUtil.getEntryHandler(handlers, "other", "app", "missing"))
                 .isNull();
     }
+
+    @Test
+    void directListLookupMatchesSchemaTableThenGlobalFallback() {
+        WildcardBookHandler books = new WildcardBookHandler();
+        AllTablesHandler all = new AllTablesHandler();
+        assertThat(HandlerUtil.getEntryHandler(List.of(all, books), "app", "books"))
+                .isSameAs(books);
+        assertThat(HandlerUtil.getEntryHandler(List.of(all, books), "app", "other"))
+                .isSameAs(all);
+    }
 }
+
