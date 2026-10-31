@@ -114,7 +114,7 @@ public abstract class AbstractMessageHandler implements MessageHandler<Message>,
                         continue;
                     }
                     // Resolve the programmatic entry handler for the table
-                    EntryHandler<?> entryHandler = HandlerUtil.getEntryHandler(tableHandlerMap, schemaName, tableName);
+                    EntryHandler<?> entryHandler = HandlerUtil.getEntryHandler(tableHandlerMap, destination, schemaName, tableName);
                     // Dispatch when a matching handler exists
                     if(Objects.nonNull(entryHandler)){
                         CanalModel model = CanalModel.builder()
