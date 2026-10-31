@@ -131,7 +131,8 @@ public class HandlerUtil {
         String dest = StringUtils.defaultIfBlank(destination, wildcard);
         String schema = StringUtils.defaultIfBlank(schemaName, wildcard);
         String table = StringUtils.defaultIfBlank(tableName, wildcard);
-        String requestKey = getCombinationValue(dest, schema, table, eventType);
+        // Canal destination names are case-sensitive even though the lookup buckets are not.
+        String requestKey = dest + "\u0000" + getCombinationValue(wildcard, schema, table, eventType);
         Predicate<CanalEventHolder> predicate = eventPredicateMap.computeIfAbsent(requestKey,
                 k -> getAnnotationFilter(destination, schemaName, tableName, eventType));
         String[] keys = {
@@ -165,7 +166,8 @@ public class HandlerUtil {
      * @return the matching entry handler, or the global handler, or {@code null}
      */
     public static EntryHandler getEntryHandler(Map<String, EntryHandler> map, String schemaName, String tableName) {
-        return getEntryHandler(map, null, schemaName, tableName);
+        EntryHandler entryHandler = map.get((schemaName + "." + tableName).toLowerCase());
+        return entryHandler != null ? entryHandler : map.get(TableNameEnum.ALL.name().toLowerCase());
     }
 
     /**
@@ -183,6 +185,7 @@ public class HandlerUtil {
                 getCombinationValue(wildcard, schema, table),
                 getCombinationValue(dest, wildcard, table),
                 getCombinationValue(wildcard, wildcard, table),
+                (schema + "." + table).toLowerCase(),
                 table.toLowerCase(),
                 getCombinationValue(dest, schema, wildcard),
                 getCombinationValue(wildcard, schema, wildcard),
@@ -215,7 +218,7 @@ public class HandlerUtil {
 
         // Match destination; when not specified the holder matches all destinations
         Predicate<CanalEventHolder> df = holder -> StringUtils.isEmpty(holder.getEvent().destination())
-                || holder.getEvent().destination().equalsIgnoreCase(destination)
+                || holder.getEvent().destination().equals(destination)
                 || holder.getEvent().destination().equals(TableNameEnum.ALL.getDestination()) || destination == null;
 
         // Match database schema name
@@ -301,3 +304,4 @@ public class HandlerUtil {
     }
 
 }
+
