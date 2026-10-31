@@ -27,8 +27,10 @@ public class AddressUtils {
         for (String address : StringUtils.commaDelimitedListToStringArray(addresses)) {
             if (StringUtils.hasText(address)) {
                 String[] split = StringUtils.split(address, ":");
-                Integer port = split.length == 1 ? CanalSimpleProperties.DEFAULT_PORT : Integer.parseInt(split[1]);
-                parsedAddresses.add(new InetSocketAddress(split[0], port));
+                // Spring's split returns null when the delimiter is absent.
+                String host = split == null ? address : split[0];
+                int port = split == null ? CanalSimpleProperties.DEFAULT_PORT : Integer.parseInt(split[1]);
+                parsedAddresses.add(new InetSocketAddress(host, port));
             }
         }
         return parsedAddresses;
