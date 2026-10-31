@@ -40,7 +40,7 @@ public abstract class AbstractFlatMessageHandler implements MessageHandler<FlatM
     /**
      * Table change event handlers registered via annotations.
      */
-    private Map<String, List<CanalEventHolder>> tableEventHolderMap;
+    private Map<String, List<CanalEventHolder>> tableEventHolderMap = Collections.emptyMap();
     /**
      * Programmatic table change handlers.
      */
