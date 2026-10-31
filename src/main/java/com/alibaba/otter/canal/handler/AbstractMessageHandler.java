@@ -197,6 +197,9 @@ public abstract class AbstractMessageHandler implements MessageHandler<Message>,
             // Inspect each declared method of the bean
             Method[] methods = ReflectionUtils.getDeclaredMethods(target.getClass());
             for (Method method : methods) {
+                if (method.isBridge() || method.isSynthetic()) {
+                    continue;
+                }
                 OnCanalEvent canalEvent = AnnotatedElementUtils.findMergedAnnotation(method, OnCanalEvent.class);
                 if (Objects.nonNull(canalEvent)) {
                     eventHolders.add(new CanalEventHolder(target, method, canalEvent));
@@ -208,3 +211,4 @@ public abstract class AbstractMessageHandler implements MessageHandler<Message>,
     }
 
 }
+
