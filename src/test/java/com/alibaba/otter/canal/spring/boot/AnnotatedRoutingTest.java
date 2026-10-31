@@ -4,6 +4,7 @@ import com.alibaba.otter.canal.annotation.BinlogEventHandler;
 import com.alibaba.otter.canal.annotation.OnCanalEvent;
 import com.alibaba.otter.canal.context.CanalContext;
 import com.alibaba.otter.canal.handler.impl.SyncMessageHandlerImpl;
+import com.alibaba.otter.canal.handler.RowDataHandler;
 import com.alibaba.otter.canal.model.CanalModel;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.Message;
@@ -41,7 +42,7 @@ class AnnotatedRoutingTest {
         ApplicationContext context = mock(ApplicationContext.class);
         when(context.getBeansWithAnnotation(BinlogEventHandler.class))
                 .thenReturn(Map.of("listener", listener));
-        SyncMessageHandlerImpl handler = new SyncMessageHandlerImpl(List.of(), (row, entry, type) -> { });
+        SyncMessageHandlerImpl handler = new SyncMessageHandlerImpl(List.of(), mock(RowDataHandler.class));
         handler.setApplicationContext(context);
 
         CanalEntry.RowChange change = CanalEntry.RowChange.newBuilder()
