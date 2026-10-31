@@ -116,9 +116,15 @@ public class GenericUtil {
             for (Type t : interfacesTypes) {
                 Class c = (Class) ((ParameterizedType) t).getRawType();
                 if (c.equals(EntryHandler.class)) {
-                    tableClass = (Class<T>) ((ParameterizedType) t).getActualTypeArguments()[0];
-                    cache.putIfAbsent(handlerClass, tableClass);
-                    return tableClass;
+                    Type targetType = ((ParameterizedType) t).getActualTypeArguments()[0];
+                    if (targetType instanceof ParameterizedType) {
+                        targetType = ((ParameterizedType) targetType).getRawType();
+                    }
+                    if (targetType instanceof Class) {
+                        tableClass = (Class<T>) targetType;
+                        cache.putIfAbsent(handlerClass, tableClass);
+                        return tableClass;
+                    }
                 }
             }
         }
@@ -127,3 +133,4 @@ public class GenericUtil {
 
 
 }
+
