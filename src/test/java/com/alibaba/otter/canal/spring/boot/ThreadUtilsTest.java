@@ -4,6 +4,7 @@ import com.alibaba.otter.canal.util.ThreadUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -80,6 +81,18 @@ class ThreadUtilsTest {
     }
 
     @Test
+    void unresponsiveExecutorReturnsAfterTwoBoundedWaits() throws Exception {
+        ExecutorService executor = mock(ExecutorService.class);
+        when(executor.awaitTermination(1, TimeUnit.MILLISECONDS)).thenReturn(false);
+
+        ThreadUtils.shutdownGracefully(executor, 1, TimeUnit.MILLISECONDS);
+
+        verify(executor).shutdown();
+        verify(executor).shutdownNow();
+        verify(executor, times(2)).awaitTermination(1, TimeUnit.MILLISECONDS);
+    }
+
+    @Test
     void interruptedShutdownRestoresInterruptStatus() throws Exception {
         ExecutorService executor = mock(ExecutorService.class);
         when(executor.awaitTermination(1, TimeUnit.MILLISECONDS))
@@ -92,6 +105,27 @@ class ThreadUtilsTest {
         } finally {
             Thread.interrupted();
         }
+    }
+
+    @Test
+    void gracefulThreadShutdownInterruptsAndJoinsLiveWorker() throws Exception {
+        CountDownLatch started = new CountDownLatch(1);
+        AtomicBoolean interrupted = new AtomicBoolean();
+        Thread worker = ThreadUtils.newThread("waiting-worker", () -> {
+            started.countDown();
+            try {
+                new CountDownLatch(1).await();
+            } catch (InterruptedException expected) {
+                interrupted.set(true);
+            }
+        }, true);
+        worker.start();
+        assertThat(started.await(2, TimeUnit.SECONDS)).isTrue();
+
+        ThreadUtils.shutdownGracefully(worker, 2000);
+
+        assertThat(interrupted).isTrue();
+        assertThat(worker.isAlive()).isFalse();
     }
 }
 
