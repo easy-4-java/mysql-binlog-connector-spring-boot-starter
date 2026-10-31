@@ -1,7 +1,6 @@
 package com.alibaba.otter.canal.factory;
 
 
-import com.alibaba.otter.canal.enums.TableNameEnum;
 import com.alibaba.otter.canal.handler.EntryHandler;
 import com.alibaba.otter.canal.util.GenericUtil;
 import com.alibaba.otter.canal.util.HandlerUtil;
