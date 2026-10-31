@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 class ThreadUtilsTest {
 
@@ -64,4 +65,33 @@ class ThreadUtilsTest {
         assertThat(fixed.isTerminated()).isTrue();
         assertThat(pool.isTerminated()).isTrue();
     }
+
+    @Test
+    void timedOutExecutorIsCancelledAfterGracefulShutdown() throws Exception {
+        ExecutorService executor = mock(ExecutorService.class);
+        when(executor.awaitTermination(1, TimeUnit.MILLISECONDS))
+                .thenReturn(false, true);
+
+        ThreadUtils.shutdownGracefully(executor, 1, TimeUnit.MILLISECONDS);
+
+        verify(executor).shutdown();
+        verify(executor).shutdownNow();
+        verify(executor, times(2)).awaitTermination(1, TimeUnit.MILLISECONDS);
+    }
+
+    @Test
+    void interruptedShutdownRestoresInterruptStatus() throws Exception {
+        ExecutorService executor = mock(ExecutorService.class);
+        when(executor.awaitTermination(1, TimeUnit.MILLISECONDS))
+                .thenThrow(new InterruptedException("interrupted"));
+
+        try {
+            ThreadUtils.shutdownGracefully(executor, 1, TimeUnit.MILLISECONDS);
+            assertThat(Thread.currentThread().isInterrupted()).isTrue();
+            verify(executor).shutdownNow();
+        } finally {
+            Thread.interrupted();
+        }
+    }
 }
+
