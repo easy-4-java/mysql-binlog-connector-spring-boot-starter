@@ -1,6 +1,8 @@
 package com.alibaba.otter.canal.spring.boot;
 
 import com.alibaba.otter.canal.annotation.CanalEventHolder;
+import com.alibaba.otter.canal.annotation.CanalTable;
+import com.alibaba.otter.canal.handler.EntryHandler;
 import com.alibaba.otter.canal.annotation.OnCanalEvent;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.util.HandlerUtil;
@@ -44,5 +46,26 @@ class HandlerUtilTest {
         assertThat(HandlerUtil.getCombinationValue("ORDERS", "APP", "BOOKS",
                 CanalEntry.EventType.INSERT)).isEqualTo("orders.app.books.insert");
         assertThat(HandlerUtil.getEventHolderMap(List.of())).isEmpty();
+    }
+
+    @CanalTable(schema = "app", table = "books")
+    static class WildcardBookHandler implements EntryHandler<String> { }
+
+    @CanalTable(destination = "orders", schema = "app", table = "books")
+    static class OrdersBookHandler implements EntryHandler<String> { }
+
+    @Test
+    void destinationSpecificHandlerWinsThenFallsBackToWildcard() {
+        WildcardBookHandler wildcard = new WildcardBookHandler();
+        OrdersBookHandler orders = new OrdersBookHandler();
+        Map<String, EntryHandler> handlers = HandlerUtil.getTableHandlerMap(List.of(wildcard, orders));
+        assertThat(HandlerUtil.getEntryHandler(handlers, "orders", "app", "books"))
+                .isSameAs(orders);
+        assertThat(HandlerUtil.getEntryHandler(handlers, "other", "app", "books"))
+                .isSameAs(wildcard);
+        assertThat(HandlerUtil.getEntryHandler(handlers, "app", "books"))
+                .isSameAs(wildcard);
+        assertThat(HandlerUtil.getEntryHandler(handlers, "other", "app", "missing"))
+                .isNull();
     }
 }
