@@ -128,12 +128,32 @@ public class HandlerUtil {
                                                         String schemaName,
                                                         String tableName,
                                                         CanalEntry.EventType eventType) {
-        // Build the lookup key from the four attributes
-        String key = getCombinationValue(destination, schemaName, tableName, eventType);
-        // Resolve the predicate for the lookup key
-        Predicate<CanalEventHolder> predicate =  eventPredicateMap.computeIfAbsent(key, k -> getAnnotationFilter(destination, schemaName, tableName, eventType));
-        // Return the filtered results
-        return map.getOrDefault(key, Collections.emptyList()).stream().filter(predicate).collect(Collectors.toList());
+        String wildcard = TableNameEnum.ALL.getTable();
+        String dest = StringUtils.defaultIfBlank(destination, wildcard);
+        String schema = StringUtils.defaultIfBlank(schemaName, wildcard);
+        String table = StringUtils.defaultIfBlank(tableName, wildcard);
+        String requestKey = getCombinationValue(dest, schema, table, eventType);
+        Predicate<CanalEventHolder> predicate = eventPredicateMap.computeIfAbsent(requestKey,
+                k -> getAnnotationFilter(destination, schemaName, tableName, eventType));
+        String[] keys = {
+                getCombinationValue(dest, schema, table, eventType),
+                getCombinationValue(wildcard, schema, table, eventType),
+                getCombinationValue(dest, wildcard, table, eventType),
+                getCombinationValue(wildcard, wildcard, table, eventType),
+                getCombinationValue(dest, schema, wildcard, eventType),
+                getCombinationValue(wildcard, schema, wildcard, eventType),
+                getCombinationValue(dest, wildcard, wildcard, eventType),
+                getCombinationValue(wildcard, wildcard, wildcard, eventType)
+        };
+        LinkedHashSet<CanalEventHolder> matches = new LinkedHashSet<>();
+        for (String key : keys) {
+            for (CanalEventHolder holder : map.getOrDefault(key, Collections.emptyList())) {
+                if (predicate.test(holder)) {
+                    matches.add(holder);
+                }
+            }
+        }
+        return new ArrayList<>(matches);
     }
 
     /**
@@ -196,11 +216,13 @@ public class HandlerUtil {
 
         // Match destination; when not specified the holder matches all destinations
         Predicate<CanalEventHolder> df = holder -> StringUtils.isEmpty(holder.getEvent().destination())
-                || holder.getEvent().destination().equals(destination) || destination == null;
+                || holder.getEvent().destination().equalsIgnoreCase(destination)
+                || holder.getEvent().destination().equals(TableNameEnum.ALL.getDestination()) || destination == null;
 
         // Match database schema name
         Predicate<CanalEventHolder> sf = holder -> StringUtils.isNotBlank(holder.getEvent().schema())
-                && holder.getEvent().schema().equalsIgnoreCase(schemaName);
+                && (holder.getEvent().schema().equalsIgnoreCase(schemaName)
+                    || holder.getEvent().schema().equals(TableNameEnum.ALL.getSchema()));
 
         // Match table name; when not specified the holder matches all tables
         Predicate<CanalEventHolder> tf = holder -> StringUtils.isNotBlank(holder.getEvent().table())
