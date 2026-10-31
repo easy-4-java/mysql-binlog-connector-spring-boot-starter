@@ -146,12 +146,37 @@ public class HandlerUtil {
      * @return the matching entry handler, or the global handler, or {@code null}
      */
     public static EntryHandler getEntryHandler(Map<String, EntryHandler> map, String schemaName, String tableName) {
-        StringJoiner joiner = new StringJoiner(".").add(schemaName).add(tableName);
-        EntryHandler entryHandler = map.get(joiner.toString().toLowerCase());
-        if (entryHandler == null) {
-            return map.get(TableNameEnum.ALL.name().toLowerCase());
+        return getEntryHandler(map, null, schemaName, tableName);
+    }
+
+    /**
+     * Resolves the most specific destination, schema and table handler, then falls back
+     * through wildcard bindings and MyBatis table-name bindings.
+     */
+    public static EntryHandler getEntryHandler(Map<String, EntryHandler> map, String destination,
+                                               String schemaName, String tableName) {
+        String wildcard = TableNameEnum.ALL.getTable();
+        String dest = StringUtils.defaultIfBlank(destination, wildcard);
+        String schema = StringUtils.defaultIfBlank(schemaName, wildcard);
+        String table = StringUtils.defaultIfBlank(tableName, wildcard);
+        String[] keys = {
+                getCombinationValue(dest, schema, table),
+                getCombinationValue(wildcard, schema, table),
+                getCombinationValue(dest, wildcard, table),
+                getCombinationValue(wildcard, wildcard, table),
+                table.toLowerCase(),
+                getCombinationValue(dest, schema, wildcard),
+                getCombinationValue(wildcard, schema, wildcard),
+                getCombinationValue(dest, wildcard, wildcard),
+                getCombinationValue(wildcard, wildcard, wildcard)
+        };
+        for (String key : keys) {
+            EntryHandler handler = map.get(key);
+            if (handler != null) {
+                return handler;
+            }
         }
-        return entryHandler;
+        return null;
     }
 
     /**
