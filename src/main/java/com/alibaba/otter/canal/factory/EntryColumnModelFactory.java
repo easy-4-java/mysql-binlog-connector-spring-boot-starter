@@ -39,7 +39,7 @@ public class EntryColumnModelFactory extends AbstractModelFactory<List<CanalEntr
     @Override
     public <R> R newInstance(EntryHandler entryHandler, List<CanalEntry.Column> columns) throws Exception {
         String canalTableName = HandlerUtil.getCanalTableNameCombination(entryHandler);
-        if (TableNameEnum.ALL.name().toLowerCase().equals(canalTableName)) {
+        if (HandlerUtil.getCombinationValue(null, null, null).equals(canalTableName)) {
             Map<String, String> map = columns.stream().collect(Collectors.toMap(CanalEntry.Column::getName, CanalEntry.Column::getValue));
             return (R) map;
         }
@@ -61,7 +61,7 @@ public class EntryColumnModelFactory extends AbstractModelFactory<List<CanalEntr
     @Override
     public <R> R newInstance(EntryHandler entryHandler, List<CanalEntry.Column> columns, Set<String> updateColumn) throws Exception {
         String canalTableName = HandlerUtil.getCanalTableNameCombination(entryHandler);
-        if (TableNameEnum.ALL.name().toLowerCase().equals(canalTableName)) {
+        if (HandlerUtil.getCombinationValue(null, null, null).equals(canalTableName)) {
             Map<String, String> map = columns.stream().filter(column -> updateColumn.contains(column.getName()))
                     .collect(Collectors.toMap(CanalEntry.Column::getName, CanalEntry.Column::getValue));
             return (R) map;
