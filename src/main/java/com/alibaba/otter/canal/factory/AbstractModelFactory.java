@@ -24,11 +24,12 @@ public abstract class AbstractModelFactory<T> implements IModelFactory<T> {
 
     @Override
     public <R> R newInstance(EntryHandler entryHandler, T t) throws Exception {
+        Class<R> tableClass = GenericUtil.getTableClass(entryHandler);
         String canalTableName = HandlerUtil.getCanalTableNameCombination(entryHandler);
-        if (HandlerUtil.getCombinationValue(null, null, null).equals(canalTableName)) {
+        if (HandlerUtil.getCombinationValue(null, null, null).equals(canalTableName)
+                && (tableClass == null || tableClass.isInstance(t))) {
             return (R) t;
         }
-        Class<R> tableClass = GenericUtil.getTableClass(entryHandler);
         if (tableClass != null) {
             return newInstance(tableClass, t);
         }
@@ -46,3 +47,4 @@ public abstract class AbstractModelFactory<T> implements IModelFactory<T> {
      */
     abstract <R> R newInstance(Class<R> tableClass, T t) throws Exception;
 }
+
