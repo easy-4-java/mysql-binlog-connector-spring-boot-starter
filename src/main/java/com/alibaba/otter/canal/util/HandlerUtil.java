@@ -167,6 +167,9 @@ public class HandlerUtil {
      */
     public static EntryHandler getEntryHandler(Map<String, EntryHandler> map, String schemaName, String tableName) {
         EntryHandler entryHandler = map.get((schemaName + "." + tableName).toLowerCase());
+        if (entryHandler == null) {
+            entryHandler = map.get(getCombinationValue(null, schemaName, tableName));
+        }
         return entryHandler != null ? entryHandler : map.get(TableNameEnum.ALL.name().toLowerCase());
     }
 
