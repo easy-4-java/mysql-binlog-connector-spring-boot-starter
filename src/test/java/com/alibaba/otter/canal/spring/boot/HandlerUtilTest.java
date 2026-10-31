@@ -6,6 +6,11 @@ import com.alibaba.otter.canal.handler.EntryHandler;
 import com.alibaba.otter.canal.annotation.OnCanalEvent;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.util.HandlerUtil;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.core.MybatisConfiguration;
+import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
+import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -57,6 +62,13 @@ class HandlerUtilTest {
     @CanalTable
     static class AllTablesHandler implements EntryHandler<String> { }
 
+    @TableName(value = "books", schema = "app")
+    static class SchemaBook {
+        @TableId private String id;
+    }
+
+    static class SchemaBookHandler implements EntryHandler<SchemaBook> { }
+
     @Test
     void destinationSpecificHandlerWinsThenFallsBackToWildcard() {
         WildcardBookHandler wildcard = new WildcardBookHandler();
@@ -79,6 +91,20 @@ class HandlerUtilTest {
         assertThat(HandlerUtil.getEntryHandler(List.of(all, books), "app", "books"))
                 .isSameAs(books);
         assertThat(HandlerUtil.getEntryHandler(List.of(all, books), "app", "other"))
+                .isSameAs(all);
+    }
+
+    @Test
+    void mybatisSchemaTableRegistrationRoutesThroughBothPublicLookups() {
+        TableInfoHelper.initTableInfo(new MapperBuilderAssistant(new MybatisConfiguration(), ""), SchemaBook.class);
+        SchemaBookHandler book = new SchemaBookHandler();
+        Map<String, EntryHandler> handlers = HandlerUtil.getTableHandlerMap(List.of(book));
+        assertThat(handlers).containsKey("app.books");
+        assertThat(HandlerUtil.getEntryHandler(handlers, "app", "books")).isSameAs(book);
+        assertThat(HandlerUtil.getEntryHandler(handlers, "orders", "app", "books")).isSameAs(book);
+
+        EntryHandler all = new AllTablesHandler();
+        assertThat(HandlerUtil.getEntryHandler(Map.of("all", all), "missing", "table"))
                 .isSameAs(all);
     }
 }
