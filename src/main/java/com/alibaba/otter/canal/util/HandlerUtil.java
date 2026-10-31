@@ -37,18 +37,17 @@ public class HandlerUtil {
      * @return the matching entry handler, or the global handler, or {@code null}
      */
     public static EntryHandler getEntryHandler(List<? extends EntryHandler> entryHandlers, String schemaName, String tableName) {
-        StringJoiner joiner = new StringJoiner(".").add(schemaName).add(tableName);
         EntryHandler globalHandler = null;
         for (EntryHandler handler : entryHandlers) {
             String canalTableNameCombination = getCanalTableNameCombination(handler);
             if (StringUtils.isBlank(canalTableNameCombination)) {
                 continue;
             }
-            if (TableNameEnum.ALL.name().toLowerCase().equals(canalTableNameCombination)) {
+            if (getCombinationValue(null, null, null).equals(canalTableNameCombination)) {
                 globalHandler = handler;
                 continue;
             }
-            if (canalTableNameCombination.equals(joiner.toString().toLowerCase())) {
+            if (canalTableNameCombination.equals(getCombinationValue(null, schemaName, tableName))) {
                 return handler;
             }
             String name = GenericUtil.getTableGenericProperties(handler);
