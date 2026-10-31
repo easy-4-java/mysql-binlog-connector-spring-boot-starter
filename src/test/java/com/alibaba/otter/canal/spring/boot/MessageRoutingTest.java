@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -30,6 +31,13 @@ class MessageRoutingTest {
         String after;
         @Override public void insert(String value) { inserted = value; }
         @Override public void update(String oldValue, String newValue) { before = oldValue; after = newValue; }
+    }
+
+    @CanalTable(schema = "app", table = "books")
+    static class FailingListener implements EntryHandler<String> {
+        @Override public void insert(String value) {
+            throw new IllegalStateException("listener rejected " + value);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -84,4 +92,53 @@ class MessageRoutingTest {
         assertThat(listener.after).isEqualTo("new");
         assertThat(CanalContext.getModel()).isNull();
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void protobufListenerFailureIsReportedAndClearsContext() throws Exception {
+        FailingListener listener = new FailingListener();
+        IModelFactory<List<CanalEntry.Column>> factory = mock(IModelFactory.class);
+        when(factory.newInstance(eq(listener), any(List.class))).thenReturn("book-1");
+        SyncMessageHandlerImpl handler = new SyncMessageHandlerImpl(
+                List.of(listener), new RowDataHandlerImpl(factory));
+        CanalEntry.RowData row = CanalEntry.RowData.newBuilder()
+                .addAfterColumns(CanalEntry.Column.newBuilder().setName("id")
+                        .setValue("book-1").build()).build();
+        CanalEntry.RowChange change = CanalEntry.RowChange.newBuilder()
+                .setEventType(CanalEntry.EventType.INSERT).addRowDatas(row).build();
+        CanalEntry.Entry entry = CanalEntry.Entry.newBuilder()
+                .setHeader(CanalEntry.Header.newBuilder()
+                        .setSchemaName("app").setTableName("books").buildPartial())
+                .setEntryType(CanalEntry.EntryType.ROWDATA)
+                .setStoreValue(change.toByteString()).buildPartial();
+
+        assertThatThrownBy(() -> handler.handleMessage("orders", new Message(1, List.of(entry))))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("parse event has an error")
+                .hasCauseInstanceOf(IllegalStateException.class);
+        assertThat(CanalContext.getModel()).isNull();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void flatListenerFailureIsReportedAndClearsContext() throws Exception {
+        FailingListener listener = new FailingListener();
+        IModelFactory<Map<String, String>> factory = mock(IModelFactory.class);
+        Map<String, String> row = Map.of("id", "book-2");
+        when(factory.newInstance(listener, row)).thenReturn("book-2");
+        SyncFlatMessageHandlerImpl handler = new SyncFlatMessageHandlerImpl(
+                List.of(listener), new MapRowDataHandlerImpl(factory));
+        FlatMessage message = new FlatMessage(2);
+        message.setDatabase("app");
+        message.setTable("books");
+        message.setType("INSERT");
+        message.setData(List.of(row));
+
+        assertThatThrownBy(() -> handler.handleMessage("orders", message))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("parse event has an error")
+                .hasCauseInstanceOf(IllegalStateException.class);
+        assertThat(CanalContext.getModel()).isNull();
+    }
 }
+
