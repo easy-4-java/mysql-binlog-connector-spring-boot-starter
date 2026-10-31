@@ -49,6 +49,16 @@ class AnnotatedRoutingTest {
         }
     }
 
+    @BinlogEventHandler
+    static class WildcardListener {
+        int count;
+
+        @OnCanalEvent(eventType = {CanalEntry.EventType.INSERT})
+        public void onAnyInsert() {
+            count++;
+        }
+    }
+
     @Test
     void discoversMethodAnnotationAndPassesProtobufEventArguments() {
         Listener listener = new Listener();
@@ -100,6 +110,29 @@ class AnnotatedRoutingTest {
         assertThat(listener.receivedRows).containsExactly(after, before);
         assertThat(listener.receivedType).isEqualTo(CanalEntry.EventType.UPDATE);
         assertThat(listener.receivedModel.getId()).isEqualTo(8);
+        assertThat(CanalContext.getModel()).isNull();
+    }
+
+    @Test
+    void defaultWildcardAnnotationReceivesMatchingInsert() {
+        WildcardListener listener = new WildcardListener();
+        ApplicationContext context = mock(ApplicationContext.class);
+        when(context.getBeansWithAnnotation(BinlogEventHandler.class))
+                .thenReturn(Map.of("listener", listener));
+        SyncMessageHandlerImpl handler = new SyncMessageHandlerImpl(
+                List.of(), mock(RowDataHandler.class));
+        handler.setApplicationContext(context);
+        CanalEntry.RowChange change = CanalEntry.RowChange.newBuilder()
+                .setEventType(CanalEntry.EventType.INSERT).build();
+        CanalEntry.Entry entry = CanalEntry.Entry.newBuilder()
+                .setHeader(CanalEntry.Header.newBuilder()
+                        .setSchemaName("app").setTableName("books").buildPartial())
+                .setEntryType(CanalEntry.EntryType.ROWDATA)
+                .setStoreValue(change.toByteString()).buildPartial();
+
+        handler.handleMessage("orders", new Message(9, List.of(entry)));
+
+        assertThat(listener.count).isEqualTo(1);
         assertThat(CanalContext.getModel()).isNull();
     }
 }
