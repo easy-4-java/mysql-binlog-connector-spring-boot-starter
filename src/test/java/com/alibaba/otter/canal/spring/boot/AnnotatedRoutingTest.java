@@ -4,9 +4,11 @@ import com.alibaba.otter.canal.annotation.BinlogEventHandler;
 import com.alibaba.otter.canal.annotation.OnCanalEvent;
 import com.alibaba.otter.canal.context.CanalContext;
 import com.alibaba.otter.canal.handler.impl.SyncMessageHandlerImpl;
+import com.alibaba.otter.canal.handler.impl.SyncFlatMessageHandlerImpl;
 import com.alibaba.otter.canal.handler.RowDataHandler;
 import com.alibaba.otter.canal.model.CanalModel;
 import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.alibaba.otter.canal.protocol.FlatMessage;
 import com.alibaba.otter.canal.protocol.Message;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
@@ -24,6 +26,7 @@ class AnnotatedRoutingTest {
         CanalModel receivedModel;
         CanalEntry.EventType receivedType;
         CanalEntry.RowChange receivedChange;
+        List<Map<String, String>> receivedRows;
 
         @OnCanalEvent(destination = "orders", schema = "app", table = "books",
                 eventType = {CanalEntry.EventType.INSERT})
@@ -31,6 +34,16 @@ class AnnotatedRoutingTest {
                              CanalEntry.EventType type) {
             receivedModel = model;
             receivedChange = change;
+            receivedType = type;
+            assertThat(CanalContext.getModel()).isSameAs(model);
+        }
+
+        @OnCanalEvent(destination = "orders", schema = "app", table = "books",
+                eventType = {CanalEntry.EventType.UPDATE})
+        public void onUpdate(CanalModel model, List<Map<String, String>> rows,
+                             CanalEntry.EventType type) {
+            receivedModel = model;
+            receivedRows = rows;
             receivedType = type;
             assertThat(CanalContext.getModel()).isSameAs(model);
         }
@@ -61,4 +74,33 @@ class AnnotatedRoutingTest {
         assertThat(listener.receivedType).isEqualTo(CanalEntry.EventType.INSERT);
         assertThat(CanalContext.getModel()).isNull();
     }
+
+    @Test
+    void flatUpdatePassesOldAndNewRowsToAnnotatedListener() {
+        Listener listener = new Listener();
+        ApplicationContext context = mock(ApplicationContext.class);
+        when(context.getBeansWithAnnotation(BinlogEventHandler.class))
+                .thenReturn(Map.of("listener", listener));
+        SyncFlatMessageHandlerImpl handler = new SyncFlatMessageHandlerImpl(
+                List.of(), mock(RowDataHandler.class));
+        handler.setApplicationContext(context);
+        Map<String, String> after = Map.of("title", "new");
+        Map<String, String> before = Map.of("title", "old");
+        FlatMessage message = new FlatMessage(8);
+        message.setDatabase("app");
+        message.setTable("books");
+        message.setType("UPDATE");
+        message.setData(List.of(after));
+        message.setOld(List.of(before));
+        message.setEs(100L);
+        message.setTs(200L);
+
+        handler.handleMessage("orders", message);
+
+        assertThat(listener.receivedRows).containsExactly(after, before);
+        assertThat(listener.receivedType).isEqualTo(CanalEntry.EventType.UPDATE);
+        assertThat(listener.receivedModel.getId()).isEqualTo(8);
+        assertThat(CanalContext.getModel()).isNull();
+    }
 }
+
