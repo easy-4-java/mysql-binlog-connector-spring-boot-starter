@@ -44,6 +44,14 @@ class CanalUtilsTest {
     }
 
     @Test
+    void unrelatedHeaderPropertiesDoNotCreateCurrentGtid() {
+        CanalEntry.Header header = CanalEntry.Header.newBuilder()
+                .addProps(CanalEntry.Pair.newBuilder().setKey("other").setValue("value"))
+                .buildPartial();
+        assertThat(CanalUtils.getCurrentGtid(header)).isEmpty();
+    }
+
+    @Test
     void parsesValidRowAndTransactionEntries() {
         CanalEntry.Header header = header();
         CanalEntry.Column column = CanalEntry.Column.newBuilder()
@@ -110,6 +118,30 @@ class CanalUtilsTest {
         assertThat(CanalUtils.buildPositionForDump(entry))
                 .startsWith("mysql-bin.000002:55:1000(")
                 .doesNotContain("gtid(");
+    }
+
+    @Test
+    void printsValidDdlAndDeletedBinaryRowWithoutParseFailure() {
+        CanalEntry.Column binary = CanalEntry.Column.newBuilder()
+                .setName("payload").setValue("bytes")
+                .setMysqlType("BLOB").setUpdated(true).build();
+        CanalEntry.RowChange ddl = CanalEntry.RowChange.newBuilder()
+                .setEventType(CanalEntry.EventType.QUERY).setIsDdl(true)
+                .setSql("ALTER TABLE books ADD COLUMN title VARCHAR(20)").build();
+        CanalEntry.RowChange delete = CanalEntry.RowChange.newBuilder()
+                .setEventType(CanalEntry.EventType.DELETE)
+                .addRowDatas(CanalEntry.RowData.newBuilder().addBeforeColumns(binary)).build();
+        CanalEntry.Entry ddlEntry = CanalEntry.Entry.newBuilder()
+                .setHeader(header()).setEntryType(CanalEntry.EntryType.ROWDATA)
+                .setStoreValue(ddl.toByteString()).buildPartial();
+        CanalEntry.Entry deleteEntry = CanalEntry.Entry.newBuilder()
+                .setHeader(header()).setEntryType(CanalEntry.EntryType.ROWDATA)
+                .setStoreValue(delete.toByteString()).buildPartial();
+
+        assertThatCode(() -> CanalUtils.printEntry(List.of(ddlEntry, deleteEntry)))
+                .doesNotThrowAnyException();
+        assertThatCode(() -> CanalUtils.printColumn(List.of(binary)))
+                .doesNotThrowAnyException();
     }
 }
 
