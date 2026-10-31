@@ -59,6 +59,48 @@ class AnnotatedRoutingTest {
         }
     }
 
+    @BinlogEventHandler
+    static class UpperDestinationListener {
+        int count;
+        @OnCanalEvent(destination = "Orders", schema = "app", table = "books",
+                eventType = {CanalEntry.EventType.INSERT})
+        public void onInsert() { count++; }
+    }
+
+    @BinlogEventHandler
+    static class LowerDestinationListener {
+        int count;
+        @OnCanalEvent(destination = "orders", schema = "app", table = "books",
+                eventType = {CanalEntry.EventType.INSERT})
+        public void onInsert() { count++; }
+    }
+
+    @Test
+    void destinationCaseKeepsSeparateListenersAcrossSequentialEvents() {
+        UpperDestinationListener upper = new UpperDestinationListener();
+        LowerDestinationListener lower = new LowerDestinationListener();
+        ApplicationContext context = mock(ApplicationContext.class);
+        when(context.getBeansWithAnnotation(BinlogEventHandler.class))
+                .thenReturn(Map.of("upper", upper, "lower", lower));
+        SyncMessageHandlerImpl handler = new SyncMessageHandlerImpl(
+                List.of(), mock(RowDataHandler.class));
+        handler.setApplicationContext(context);
+        CanalEntry.RowChange change = CanalEntry.RowChange.newBuilder()
+                .setEventType(CanalEntry.EventType.INSERT).build();
+        CanalEntry.Entry entry = CanalEntry.Entry.newBuilder()
+                .setHeader(CanalEntry.Header.newBuilder()
+                        .setSchemaName("app").setTableName("books").buildPartial())
+                .setEntryType(CanalEntry.EntryType.ROWDATA)
+                .setStoreValue(change.toByteString()).buildPartial();
+
+        handler.handleMessage("Orders", new Message(1, List.of(entry)));
+        assertThat(upper.count).isEqualTo(1);
+        assertThat(lower.count).isZero();
+        handler.handleMessage("orders", new Message(2, List.of(entry)));
+        assertThat(upper.count).isEqualTo(1);
+        assertThat(lower.count).isEqualTo(1);
+    }
+
     @Test
     void discoversMethodAnnotationAndPassesProtobufEventArguments() {
         Listener listener = new Listener();
