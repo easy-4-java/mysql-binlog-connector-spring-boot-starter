@@ -37,18 +37,17 @@ public class HandlerUtil {
      * @return the matching entry handler, or the global handler, or {@code null}
      */
     public static EntryHandler getEntryHandler(List<? extends EntryHandler> entryHandlers, String schemaName, String tableName) {
-        StringJoiner joiner = new StringJoiner(".").add(schemaName).add(tableName);
         EntryHandler globalHandler = null;
         for (EntryHandler handler : entryHandlers) {
             String canalTableNameCombination = getCanalTableNameCombination(handler);
             if (StringUtils.isBlank(canalTableNameCombination)) {
                 continue;
             }
-            if (TableNameEnum.ALL.name().toLowerCase().equals(canalTableNameCombination)) {
+            if (getCombinationValue(null, null, null).equals(canalTableNameCombination)) {
                 globalHandler = handler;
                 continue;
             }
-            if (canalTableNameCombination.equals(joiner.toString().toLowerCase())) {
+            if (canalTableNameCombination.equals(getCombinationValue(null, schemaName, tableName))) {
                 return handler;
             }
             String name = GenericUtil.getTableGenericProperties(handler);
@@ -128,12 +127,33 @@ public class HandlerUtil {
                                                         String schemaName,
                                                         String tableName,
                                                         CanalEntry.EventType eventType) {
-        // Build the lookup key from the four attributes
-        String key = getCombinationValue(destination, schemaName, tableName, eventType);
-        // Resolve the predicate for the lookup key
-        Predicate<CanalEventHolder> predicate =  eventPredicateMap.computeIfAbsent(key, k -> getAnnotationFilter(destination, schemaName, tableName, eventType));
-        // Return the filtered results
-        return map.getOrDefault(key, Collections.emptyList()).stream().filter(predicate).collect(Collectors.toList());
+        String wildcard = TableNameEnum.ALL.getTable();
+        String dest = StringUtils.defaultIfBlank(destination, wildcard);
+        String schema = StringUtils.defaultIfBlank(schemaName, wildcard);
+        String table = StringUtils.defaultIfBlank(tableName, wildcard);
+        // Canal destination names are case-sensitive even though the lookup buckets are not.
+        String requestKey = dest + "\u0000" + getCombinationValue(wildcard, schema, table, eventType);
+        Predicate<CanalEventHolder> predicate = eventPredicateMap.computeIfAbsent(requestKey,
+                k -> getAnnotationFilter(destination, schemaName, tableName, eventType));
+        String[] keys = {
+                getCombinationValue(dest, schema, table, eventType),
+                getCombinationValue(wildcard, schema, table, eventType),
+                getCombinationValue(dest, wildcard, table, eventType),
+                getCombinationValue(wildcard, wildcard, table, eventType),
+                getCombinationValue(dest, schema, wildcard, eventType),
+                getCombinationValue(wildcard, schema, wildcard, eventType),
+                getCombinationValue(dest, wildcard, wildcard, eventType),
+                getCombinationValue(wildcard, wildcard, wildcard, eventType)
+        };
+        LinkedHashSet<CanalEventHolder> matches = new LinkedHashSet<>();
+        for (String key : keys) {
+            for (CanalEventHolder holder : map.getOrDefault(key, Collections.emptyList())) {
+                if (predicate.test(holder)) {
+                    matches.add(holder);
+                }
+            }
+        }
+        return new ArrayList<>(matches);
     }
 
     /**
@@ -146,12 +166,42 @@ public class HandlerUtil {
      * @return the matching entry handler, or the global handler, or {@code null}
      */
     public static EntryHandler getEntryHandler(Map<String, EntryHandler> map, String schemaName, String tableName) {
-        StringJoiner joiner = new StringJoiner(".").add(schemaName).add(tableName);
-        EntryHandler entryHandler = map.get(joiner.toString().toLowerCase());
+        EntryHandler entryHandler = map.get((schemaName + "." + tableName).toLowerCase());
         if (entryHandler == null) {
-            return map.get(TableNameEnum.ALL.name().toLowerCase());
+            entryHandler = map.get(getCombinationValue(null, schemaName, tableName));
         }
-        return entryHandler;
+        return entryHandler != null ? entryHandler : map.get(TableNameEnum.ALL.name().toLowerCase());
+    }
+
+    /**
+     * Resolves the most specific destination, schema and table handler, then falls back
+     * through wildcard bindings and MyBatis table-name bindings.
+     */
+    public static EntryHandler getEntryHandler(Map<String, EntryHandler> map, String destination,
+                                               String schemaName, String tableName) {
+        String wildcard = TableNameEnum.ALL.getTable();
+        String dest = StringUtils.defaultIfBlank(destination, wildcard);
+        String schema = StringUtils.defaultIfBlank(schemaName, wildcard);
+        String table = StringUtils.defaultIfBlank(tableName, wildcard);
+        String[] keys = {
+                getCombinationValue(dest, schema, table),
+                getCombinationValue(wildcard, schema, table),
+                getCombinationValue(dest, wildcard, table),
+                getCombinationValue(wildcard, wildcard, table),
+                (schema + "." + table).toLowerCase(),
+                table.toLowerCase(),
+                getCombinationValue(dest, schema, wildcard),
+                getCombinationValue(wildcard, schema, wildcard),
+                getCombinationValue(dest, wildcard, wildcard),
+                getCombinationValue(wildcard, wildcard, wildcard)
+        };
+        for (String key : keys) {
+            EntryHandler handler = map.get(key);
+            if (handler != null) {
+                return handler;
+            }
+        }
+        return null;
     }
 
     /**
@@ -171,11 +221,13 @@ public class HandlerUtil {
 
         // Match destination; when not specified the holder matches all destinations
         Predicate<CanalEventHolder> df = holder -> StringUtils.isEmpty(holder.getEvent().destination())
-                || holder.getEvent().destination().equals(destination) || destination == null;
+                || holder.getEvent().destination().equals(destination)
+                || holder.getEvent().destination().equals(TableNameEnum.ALL.getDestination()) || destination == null;
 
         // Match database schema name
         Predicate<CanalEventHolder> sf = holder -> StringUtils.isNotBlank(holder.getEvent().schema())
-                && holder.getEvent().schema().equalsIgnoreCase(schemaName);
+                && (holder.getEvent().schema().equalsIgnoreCase(schemaName)
+                    || holder.getEvent().schema().equals(TableNameEnum.ALL.getSchema()));
 
         // Match table name; when not specified the holder matches all tables
         Predicate<CanalEventHolder> tf = holder -> StringUtils.isNotBlank(holder.getEvent().table())
@@ -255,3 +307,4 @@ public class HandlerUtil {
     }
 
 }
+

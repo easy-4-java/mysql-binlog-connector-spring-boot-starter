@@ -40,7 +40,7 @@ public abstract class AbstractFlatMessageHandler implements MessageHandler<FlatM
     /**
      * Table change event handlers registered via annotations.
      */
-    private Map<String, List<CanalEventHolder>> tableEventHolderMap;
+    private Map<String, List<CanalEventHolder>> tableEventHolderMap = Collections.emptyMap();
     /**
      * Programmatic table change handlers.
      */
@@ -116,7 +116,7 @@ public abstract class AbstractFlatMessageHandler implements MessageHandler<FlatM
                     continue;
                 }
                 // Resolve the programmatic entry handler for the table
-                EntryHandler<?> entryHandler = HandlerUtil.getEntryHandler(tableHandlerMap, schemaName, tableName);
+                EntryHandler<?> entryHandler = HandlerUtil.getEntryHandler(tableHandlerMap, destination, schemaName, tableName);
                 // Dispatch when a matching handler exists
                 if(Objects.nonNull(entryHandler)){
                     CanalModel model = CanalModel.builder()
@@ -193,6 +193,9 @@ public abstract class AbstractFlatMessageHandler implements MessageHandler<FlatM
             // Inspect each declared method of the bean
             Method[] methods = ReflectionUtils.getDeclaredMethods(target.getClass());
             for (Method method : methods) {
+                if (method.isBridge() || method.isSynthetic()) {
+                    continue;
+                }
                 OnCanalEvent canalEvent = AnnotatedElementUtils.findMergedAnnotation(method, OnCanalEvent.class);
                 if (Objects.nonNull(canalEvent)) {
                     eventHolders.add(new CanalEventHolder(target, method, canalEvent));
@@ -204,3 +207,4 @@ public abstract class AbstractFlatMessageHandler implements MessageHandler<FlatM
     }
 
 }
+

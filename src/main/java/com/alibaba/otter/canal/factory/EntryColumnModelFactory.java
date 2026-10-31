@@ -1,7 +1,6 @@
 package com.alibaba.otter.canal.factory;
 
 
-import com.alibaba.otter.canal.enums.TableNameEnum;
 import com.alibaba.otter.canal.handler.EntryHandler;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.util.GenericUtil;
@@ -38,12 +37,13 @@ public class EntryColumnModelFactory extends AbstractModelFactory<List<CanalEntr
 
     @Override
     public <R> R newInstance(EntryHandler entryHandler, List<CanalEntry.Column> columns) throws Exception {
+        Class<R> entityClass = GenericUtil.getTableClass(entryHandler);
         String canalTableName = HandlerUtil.getCanalTableNameCombination(entryHandler);
-        if (TableNameEnum.ALL.name().toLowerCase().equals(canalTableName)) {
+        if (HandlerUtil.getCombinationValue(null, null, null).equals(canalTableName)
+                && (entityClass == null || Map.class.isAssignableFrom(entityClass))) {
             Map<String, String> map = columns.stream().collect(Collectors.toMap(CanalEntry.Column::getName, CanalEntry.Column::getValue));
             return (R) map;
         }
-        Class<R> entityClass = GenericUtil.getTableClass(entryHandler);
         if (entityClass != null) {
             return newInstance(entityClass, columns);
         }
@@ -60,13 +60,14 @@ public class EntryColumnModelFactory extends AbstractModelFactory<List<CanalEntr
 
     @Override
     public <R> R newInstance(EntryHandler entryHandler, List<CanalEntry.Column> columns, Set<String> updateColumn) throws Exception {
+        Class<R> tableClass = GenericUtil.getTableClass(entryHandler);
         String canalTableName = HandlerUtil.getCanalTableNameCombination(entryHandler);
-        if (TableNameEnum.ALL.name().toLowerCase().equals(canalTableName)) {
+        if (HandlerUtil.getCombinationValue(null, null, null).equals(canalTableName)
+                && (tableClass == null || Map.class.isAssignableFrom(tableClass))) {
             Map<String, String> map = columns.stream().filter(column -> updateColumn.contains(column.getName()))
                     .collect(Collectors.toMap(CanalEntry.Column::getName, CanalEntry.Column::getValue));
             return (R) map;
         }
-        Class<R> tableClass = GenericUtil.getTableClass(entryHandler);
         if (tableClass != null) {
             // Obtain MyBatis-Plus table annotation metadata
             TableInfo tableInfo = TableInfoHelper.getTableInfo(tableClass);
@@ -116,3 +117,4 @@ public class EntryColumnModelFactory extends AbstractModelFactory<List<CanalEntr
     }
 
 }
+
